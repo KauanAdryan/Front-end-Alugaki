@@ -1,0 +1,153 @@
+@font-face {
+    font-family: 'Geller Sans';
+    src: url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff2') format('woff2'),
+         url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geller Sans';
+    src: url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff2') format('woff2'),
+         url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Navbar.css */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background:#FFFFFF;
+  color: 000000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 80px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  padding-top: 25px;
+  gap: 15px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: contain; /* Mantém a proporção da imagem */
+}
+
+.logo-container h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: 000000;
+  letter-spacing: 1px;
+}
+
+.logo-container a {
+    color: #000000;
+    font-size: 36px;
+    font-weight: bold;
+    letter-spacing: -0.5px;
+    font-family: 'Geller Sans', sans-serif;
+    text-decoration: underline;
+}
+
+.logo-container a:hover {
+    text-decoration: underline;
+}
+
+.nav-options {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item a {
+  color: 000000;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-item a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.nav-text {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 20px;
+    height: 70px;
+  }
+
+  .logo-container h2 {
+    font-size: 22px;
+  }
+
+  .nav-options {
+    gap: 15px;
+  }
+
+  .nav-item a {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .nav-text {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-container h2 {
+    font-size: 18px;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .nav-options {
+    gap: 10px;
+  }
+
+  .nav-item a {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .nav-text {
+    display: none;
+  }
+}

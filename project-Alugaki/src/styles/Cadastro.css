@@ -1,0 +1,195 @@
+@font-face {
+    font-family: 'Geller Sans';
+    src: url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff2') format('woff2'),
+         url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Geller Sans';
+    src: url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff2') format('woff2'),
+         url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #FFF8E7;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Geller Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-container h1 {
+    color: #000000;
+    font-size: 36px;
+    font-weight: bold;
+    letter-spacing: -0.5px;
+    font-family: 'Geller Sans', sans-serif;
+}
+
+.signup-container {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    padding: 40px 35px;
+    font-family: 'Geller Sans', sans-serif;
+}
+
+.welcome {
+    margin-bottom: 30px;
+    align-items: center;
+    text-align: center;
+}
+
+.welcome h2 {
+    color: #000000;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-family: 'Geller Sans', sans-serif;
+}
+
+.welcome p {
+    color: #000000;
+    font-size: 16px;
+    opacity: 0.7;
+    font-family: 'Geller Sans', sans-serif;
+    font-weight: normal;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    flex: 0 0 100%;
+}
+
+.form-group label {
+    display: block;
+    color: #000000;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-family: 'Geller Sans', sans-serif;
+}
+
+.input-field {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #F9FAFB;
+    background-color: #F9FAFB;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    font-family: 'Geller Sans', sans-serif;
+    font-weight: normal;
+    flex: 1;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #000000;
+    background-color: #FFFFFF;
+}
+
+.divider {
+    height: 1px;
+    background-color: #F9FAFB;
+    margin: 25px 0;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Geller Sans', sans-serif;
+}
+
+.btn-primary {
+    background-color: #000000;
+    color: #FFFFFF;
+    margin-bottom: 15px;
+}
+
+.btn-primary:hover {
+    background-color: #333333;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.login-link a {
+    color: #000000;
+    text-decoration: none;
+    font-weight: normal;
+    font-family: 'Geller Sans', sans-serif;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .signup-container {
+        max-width: 500px;
+        padding: 30px 25px;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .signup-container {
+        max-width: 400px;
+        padding: 25px 20px;
+    }
+    
+    .logo-container h1 {
+        font-size: 32px;
+    }
+    
+    .form-row {
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+}
