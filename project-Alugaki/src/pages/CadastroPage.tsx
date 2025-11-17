@@ -82,7 +82,7 @@ export function CadastroPage() {
                 <button type="submit" className="btn btn-primary">Cadastrar</button>
                 
                 <div className="login-link">
-                    <p>Já tem uma conta?</p> <a href="login">Faça login</a>
+                    <p>Já tem uma conta? <a href="login">Faça login</a></p>
                 </div>
             </form>
         </div>

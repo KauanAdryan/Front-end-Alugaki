@@ -9,6 +9,8 @@ import './styles/Navbar.css'
 import './styles/filterBar.css'
 import { PerfilPage } from "./pages/PerfilPage.tsx"
 import './styles/Perfil.css'
+import { Mensagens } from "./pages/Mensagens.tsx"
+import './styles/Mensagens.css'
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
         <Route path= "/login" element={<LoginPage />} />
         <Route path= "/cadastro" element={<CadastroPage />} />
         <Route path= "/perfil" element={<PerfilPage />} />
+        <Route path= "/mensagens" element={<Mensagens />} />
       </Routes>
     </BrowserRouter>
   )

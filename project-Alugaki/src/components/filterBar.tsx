@@ -2,9 +2,14 @@ import { useState } from "react";
 
 export function Filtros(){
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
+    };
+
+        const toggleAddItem = () => {
+        setModalOpen(!modalOpen);
     };
 
     return(
@@ -26,7 +31,30 @@ export function Filtros(){
             </button>
 
             <div className="add_bar">
-                <button className="button-add-item">+ Adicionar Item</button>
+                <button className="button-add-item" onClick={toggleAddItem}> + Adicionar Item
+                <svg width="0" height="0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <label htmlFor="name">Nome do Item</label>
+                    <input type="text" id="name" className="input-field" placeholder="Insira o nome do item" required />
+                    <label htmlFor="description">Descrição</label>
+                    <input type="text" id="description" className="input-field" placeholder="Insira a descrição do item" required />
+                    <label htmlFor="image">Foto do Item</label>
+                    <input type="file" id="image" className="input-field" accept="image/*" required />
+                    <label htmlFor="select">Categoria</label>
+                    <select id="select" className="input-field" required >
+                        <option value="">Selecione a categoria</option>
+                        <option value="instrumentos">Instrumentos</option>
+                        <option value="amplificadores">Amplificadores</option>
+                        <option value="sistemas-pa">Sistemas de PA</option>
+                        <option value="acessorios">Acessórios</option>
+                    </select>
+                    <label htmlFor="Condição">Condição do Item</label>
+                    <input type="text" id="condition" className="input-field" placeholder="Insira a condição do item" required />
+                    <label htmlFor="price">Preço por dia (R$)</label>
+                    <input type="number" id="price" className="input-field" placeholder="Insira o preço por dia" required />
+                    <label htmlFor="availability">Disponibilidade</label>
+                    <input type="text" id="availability" className="input-field" placeholder="Insira a disponibilidade do item" required />
+                </svg>
+                </button>
             </div>
 
             <div className="search-bar">
@@ -49,6 +77,22 @@ export function Filtros(){
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </button>
+            </div>
+
+        {modalOpen && (
+            <div className="modalAdd-overlay" onClick={toggleAddItem}></div>
+        )}
+
+        <div className={`modalItem ${modalOpen ? 'modal-open' : ''}`}>
+            <div className="modal-header">
+                <h2>Adicionar Item</h2>
+                <button className="close-button" onClick={toggleAddItem}>
+
+                </button>
+            </div>
+
+            <div className="search-bar">
+                <input type="text" placeholder="Procurar equipamento..." />
             </div>
 
             <div className="sidebar-content">
@@ -138,6 +182,7 @@ export function Filtros(){
                 <button className="btn-apply">Aplicar Filtros</button>
             </div>
         </div>
+    </div>
     </div>
     </>
     )

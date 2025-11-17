@@ -45,10 +45,10 @@ export function Navbar() {
         </div>
         <div className="nav-center">
         <ul className="nav-links">
-          <li><a href="#">Início</a></li>
-          <li><a href="#" className="active">Explorar</a></li>
-          <li><a href="#">Meus Itens</a></li>
-          <li><a href="#">Mensagens</a></li>
+          <li><a href="/">Início</a></li>
+          <li><a href="#">Explorar</a></li>
+          <li><a href="itens">Meus Itens</a></li>
+          <li><a href="mensagens">Mensagens</a></li>
         </ul>
         </div>
         <div className="space">...............................................................................</div>

@@ -81,13 +81,6 @@
   transition: opacity 0.2s;
 }
 
-.nav-links a:hover,
-.nav-links a.active {
-  opacity: 0.6;
-}
-
-
-
 .profile {
   position: relative;
 }

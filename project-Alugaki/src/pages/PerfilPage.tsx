@@ -146,8 +146,8 @@ export function PerfilPage() {
             </div>
             
             <div className="form-actions">
-              <button type="submit" className="btn btn-primary">Salvar alterações</button>
-              <button type="button" className="btn btn-secondary">Cancelar</button>
+              <button type="submit" className="btn btn-save">Salvar alterações</button>
+              <button type="button" className="btn btn-cancel">Cancelar</button>
             </div>
           </form>
         </div>
