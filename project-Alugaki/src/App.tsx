@@ -11,6 +11,10 @@ import { PerfilPage } from "./pages/PerfilPage.tsx"
 import './styles/Perfil.css'
 import { Mensagens } from "./pages/Mensagens.tsx"
 import './styles/Mensagens.css'
+import { MyItens } from "./pages/Itens.tsx"
+import './styles/Itens.css'
+import { EsqueceuSenha } from "./pages/esqueceuSenha.tsx"
+import './styles/esqueceuSenha.css'
 
 function App() {
   return (
@@ -21,6 +25,8 @@ function App() {
         <Route path= "/cadastro" element={<CadastroPage />} />
         <Route path= "/perfil" element={<PerfilPage />} />
         <Route path= "/mensagens" element={<Mensagens />} />
+        <Route path= "/itens" element={<MyItens/>} />
+        <Route path= "/esqueceu-senha" element={<EsqueceuSenha/>} />
       </Routes>
     </BrowserRouter>
   )

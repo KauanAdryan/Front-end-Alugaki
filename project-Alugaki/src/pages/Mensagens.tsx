@@ -1,15 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Navbar } from "../components/Navbar";
+import { mensagensData, type Mensagem } from "../mocks/mensagensData";
 
-interface Message {
-  id: string;
-  title: string;
-  content: string;
-  sender: string;
-  timestamp: Date;
-  isRead: boolean;
-  category: string;
-}
+type Message = Mensagem;
 
 // Componente principal de Mensagens
 export function Mensagens() {
@@ -17,39 +10,14 @@ export function Mensagens() {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Simulação de carregamento de mensagens
+  // Carregar mensagens dos dados mockados
   useEffect(() => {
-    const mockMessages: Message[] = [
-      {
-        id: '1',
-        title: 'Nova Mensagem',
-        content: 'Você recebeu uma nova mensagem importante do sistema.',
-        sender: 'Sistema',
-        timestamp: new Date(),
-        isRead: false,
-        category: 'Sistema'
-      },
-      {
-        id: '2',
-        title: 'Atualização Disponível',
-        content: 'Uma nova versão do aplicativo está disponível para download.',
-        sender: 'Suporte',
-        timestamp: new Date(Date.now() - 3600000),
-        isRead: true,
-        category: 'Atualização'
-      },
-      {
-        id: '3',
-        title: 'Lembrete Importante',
-        content: 'Não se esqueça de concluir suas tarefas pendentes.',
-        sender: 'Lembretes',
-        timestamp: new Date(Date.now() - 7200000),
-        isRead: false,
-        category: 'Lembrete'
-      }
-    ];
-
-    setMessages(mockMessages);
+    // Converter timestamps de string para Date se necessário
+    const mensagensFormatadas = mensagensData.map(msg => ({
+      ...msg,
+      timestamp: msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp)
+    }));
+    setMessages(mensagensFormatadas);
   }, []);
 
   // Função para marcar mensagem como lida

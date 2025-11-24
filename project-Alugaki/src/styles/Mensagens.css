@@ -1,22 +1,7 @@
-/* ===== Fonte ===== */
-@font-face {
-  font-family: 'Geller Sans';
-  src: url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff2') format('woff2'),
-       url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Geller Sans';
-  src: url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff2') format('woff2'),
-       url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
 
 /* ===== Estilos Gerais ===== */
 body {
-  font-family: 'Geller Sans', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   background-color: #FFF8E7;
   color: #000;
   margin: 0;
@@ -230,7 +215,7 @@ body {
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  font-family: 'Geller Sans', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-weight: bold;
   transition: background-color 0.2s;
 }
@@ -246,7 +231,7 @@ body {
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  font-family: 'Geller Sans', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-weight: bold;
   transition: background-color 0.2s;
 }

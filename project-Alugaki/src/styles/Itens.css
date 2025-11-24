@@ -1,0 +1,312 @@
+/* ===== Fonte ===== */
+/* Fonte removida - usando fontes do sistema para evitar problemas de CORS */
+
+/* ===== Estilos Gerais ===== */
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background-color: #FFF8E7;
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Cabeçalho ===== */
+.explore-header {
+  text-align: center;
+  margin: 3rem 1rem 2rem 1rem;
+}
+
+.explore-header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.explore-header p {
+  color: #444;
+}
+
+/* ===== Cards ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  justify-items: center;
+  padding: 0.5rem 6rem 3rem 6rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  width: 220px;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.card h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.card p {
+  color: #333;
+  font-weight: bold;
+  margin: 0.2rem 0;
+}
+
+.card small {
+  color: #666;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #fff;
+  padding: 2rem;
+  width: 420px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.modal h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-top: 0;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal input,
+.modal textarea,
+.modal select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.btn-enviar {
+  background: #4CAF50;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: #d9534f;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-add-item {
+  margin-top: 1rem;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: #000;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .cards {
+    padding: 1rem 3rem 3rem 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .cards {
+    padding: 1rem 1.5rem 3rem 1.5rem;
+  }
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Cabeçalho ===== */
+.explore-header {
+  text-align: center;
+  margin: 3rem 1rem 2rem 1rem;
+}
+
+.explore-header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.explore-header p {
+  color: #444;
+}
+
+/* ===== Cards ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  justify-items: center;
+  padding: 0.5rem 6rem 3rem 6rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  width: 220px;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.card h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.card p {
+  color: #333;
+  font-weight: bold;
+  margin: 0.2rem 0;
+}
+
+.card small {
+  color: #666;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #fff;
+  padding: 2rem;
+  width: 420px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.modal h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-top: 0;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal input,
+.modal textarea,
+.modal select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.btn-enviar {
+  background: #4CAF50;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: #d9534f;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-add-item {
+  margin-top: 1rem;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: #000;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .cards {
+    padding: 1rem 3rem 3rem 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .cards {
+    padding: 1rem 1.5rem 3rem 1.5rem;
+  }
+}
+  }
+}

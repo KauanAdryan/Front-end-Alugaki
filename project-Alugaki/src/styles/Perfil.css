@@ -1,18 +1,4 @@
-@font-face {
-  font-family: 'Geller Sans';
-  src: url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff2') format('woff2'),
-       url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Geller Sans';
-  src: url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff2') format('woff2'),
-       url('https://db.onlinewebfonts.com/t/8e0a0e0c6c0b0b0b0b0b0b0b0b0b0b0b.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
+/* Fonte removida - usando fontes do sistema para evitar problemas de CORS */
 
 .perfil-page-container {
   min-height: 100vh;
@@ -78,14 +64,14 @@
   font-size: 24px;
   font-weight: bold;
   color: #000;
-  font-family: 'Geller Sans', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   margin: 0 0 4px 0;
 }
 
 .perfil-user-info p {
   font-size: 14px;
   color: #666;
-  font-family: 'Geller Sans', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
 }
 
@@ -104,7 +90,7 @@
   font-size: 24px;
   font-weight: bold;
   color: #000;
-  font-family: 'Geller Sans', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   margin: 0 0 30px 0;
   text-align: center;
 }
@@ -135,7 +121,7 @@
   font-weight: bold;
   color: #000000;
   margin-bottom: 8px;
-  font-family: 'Geller Sans', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 .input-field {
@@ -144,7 +130,7 @@
   border: 1px solid #F9FAFB;
   border-radius: 8px;
   font-size: 16px;
-  font-family: 'Geller Sans', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   background-color: #F9FAFB;
   color: #000;
   transition: all 0.3s ease;
@@ -181,7 +167,7 @@
   border-radius: 8px;
   font-size: 16px;
   font-weight: bold;
-  font-family: 'Geller Sans', sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   cursor: pointer;
   transition: all 0.3s ease;
 }

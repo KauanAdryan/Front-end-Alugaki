@@ -1,0 +1,416 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.recuperacao-page {
+    background-color: #FFF8E7;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Container do logo */
+.logo-container-recuperacao {
+    text-align: center;
+    margin-bottom: 40px;
+    background-color: #FFF8E7;
+    width: 100%;
+    max-width: 600px;
+    padding: 40px 30px;
+}
+
+.logo-container-recuperacao h1 {
+    color: #000000;
+    font-size: 36px;
+    font-weight: bold;
+    letter-spacing: -0.5px;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Container principal */
+.recuperacao-container {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    width: 600px;
+    padding: 40px 30px;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Cabeçalho */
+.recuperacao-header {
+    margin-bottom: 30px;
+    align-items: center;
+    text-align: center;
+}
+
+.recuperacao-header h2 {
+    color: #000000;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.recuperacao-header p {
+    color: #000000;
+    font-size: 16px;
+    opacity: 0.7;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-weight: normal;
+    line-height: 1.5;
+}
+
+/* Indicador de etapas */
+.etapa-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.etapa-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.etapa-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid #E5E5E5;
+    background-color: #FFFFFF;
+    color: #999;
+    transition: all 0.3s ease;
+}
+
+.etapa-circle.active {
+    background-color: #000000;
+    border-color: #000000;
+    color: #FFFFFF;
+}
+
+.etapa-circle.completed {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    color: #FFFFFF;
+}
+
+.etapa-label {
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+    font-weight: normal;
+}
+
+.etapa-label.active {
+    color: #000000;
+    font-weight: bold;
+}
+
+.etapa-connector {
+    width: 60px;
+    height: 2px;
+    background-color: #E5E5E5;
+    margin-top: -20px;
+}
+
+.etapa-connector.active {
+    background-color: #000000;
+}
+
+/* Campos do formulário */
+.form-group-recuperacao {
+    margin-bottom: 20px;
+}
+
+.form-group-recuperacao label {
+    display: block;
+    color: #000000;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.input-field-recuperacao {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #F9FAFB;
+    background-color: #F9FAFB;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-weight: normal;
+}
+
+.input-field-recuperacao:focus {
+    outline: none;
+    border-color: #000000;
+    background-color: #FFFFFF;
+}
+
+/* Mensagens */
+.mensagem-erro {
+    color: #D32F2F;
+    background-color: #FFEBEE;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #D32F2F;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.mensagem-sucesso {
+    color: #2E7D32;
+    background-color: #E8F5E9;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #2E7D32;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+/* Divisor */
+.divider-recuperacao {
+    height: 1px;
+    background-color: #F0F0F0;
+    margin: 25px 0;
+}
+
+/* Botões */
+.btn-recuperacao {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+}
+
+.btn-primary-recuperacao {
+    background-color: #000000;
+    color: #FFFFFF;
+    margin-bottom: 15px;
+}
+
+.btn-primary-recuperacao:hover {
+    background-color: #333333;
+    transform: translateY(-1px);
+}
+
+.btn-primary-recuperacao:active {
+    transform: translateY(0);
+}
+
+.btn-secondary-recuperacao {
+    background-color: transparent;
+    color: #000000;
+    border: 2px solid #000000;
+    margin-top: 10px;
+}
+
+.btn-secondary-recuperacao:hover {
+    background-color: #000000;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+.btn-secondary-recuperacao:active {
+    transform: translateY(0);
+}
+
+/* Link de voltar ao login */
+.back-to-login {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #F0F0F0;
+}
+
+.back-to-login a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: normal;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    transition: color 0.3s ease;
+}
+
+.back-to-login a:hover {
+    text-decoration: underline;
+    color: #333333;
+}
+
+/* Estados de loading */
+.btn-recuperacao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-recuperacao:disabled:hover {
+    transform: none;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.recuperacao-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .recuperacao-container {
+        width: 100%;
+        max-width: 400px;
+        padding: 30px 20px;
+    }
+    
+    .logo-container-recuperacao {
+        padding: 30px 20px;
+    }
+    
+    .logo-container-recuperacao h1 {
+        font-size: 32px;
+    }
+    
+    .recuperacao-header h2 {
+        font-size: 22px;
+    }
+    
+    .etapa-indicator {
+        gap: 10px;
+    }
+    
+    .etapa-connector {
+        width: 40px;
+    }
+    
+    .etapa-circle {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .recuperacao-page {
+        padding: 15px;
+    }
+    
+    .recuperacao-container {
+        padding: 25px 15px;
+    }
+    
+    .logo-container-recuperacao {
+        padding: 25px 15px;
+        margin-bottom: 20px;
+    }
+    
+    .logo-container-recuperacao h1 {
+        font-size: 28px;
+    }
+    
+    .recuperacao-header h2 {
+        font-size: 20px;
+    }
+    
+    .recuperacao-header p {
+        font-size: 14px;
+    }
+    
+    .etapa-indicator {
+        gap: 5px;
+    }
+    
+    .etapa-connector {
+        width: 30px;
+    }
+    
+    .etapa-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+    
+    .etapa-label {
+        font-size: 10px;
+    }
+    
+    .input-field-recuperacao {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+    
+    .btn-recuperacao {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+
+/* Estilos para validação de senha */
+.senha-strength {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.senha-strength.fraca {
+    color: #D32F2F;
+}
+
+.senha-strength.media {
+    color: #FF9800;
+}
+
+.senha-strength.forte {
+    color: #4CAF50;
+}
+
+/* Tooltip para informações */
+.info-tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 5px;
+    cursor: help;
+}
+
+.info-tooltip::after {
+    content: "ℹ️";
+    font-size: 12px;
+}
