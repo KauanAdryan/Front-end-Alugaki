@@ -1,6 +1,3 @@
-/* ===== Fonte ===== */
-/* Fonte removida - usando fontes do sistema para evitar problemas de CORS */
-
 /* ===== Estilos Gerais ===== */
 body {
   font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -35,40 +32,151 @@ body {
 /* ===== Cards ===== */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  max-width: 1280px;
   gap: 1.5rem;
   justify-items: center;
-  padding: 0.5rem 6rem 3rem 6rem;
-  max-width: 100%;
+  padding: 0 0 3rem 0;
+  margin: 0 auto;
+  margin-left: 106px;
+  width: 1280px;
   box-sizing: border-box;
+}
+
+@media (min-width: 1400px) {
+  .cards {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 1500px) {
+  .cards {
+    margin-left: auto;
+    width: 100%;
+    max-width: 1280px;
+    padding: 0 2rem 3rem 2rem;
+  }
 }
 
 .card {
   background-color: #FFFFFF;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  padding: 1.5rem;
+  padding: 0;
   width: 220px;
+  min-height: 380px;
   transition: transform 0.2s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
   transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.card-image {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f0f0f0;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.card:hover .card-image img {
+  transform: scale(1.05);
+}
+
+.badge-indisponivel {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #f44336;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.card-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: space-between;
 }
 
 .card h3 {
-  margin-bottom: 0.5rem;
+  margin: 0;
   font-size: 1.1rem;
+  font-weight: 600;
+  color: #000;
+  line-height: 1.3;
 }
 
-.card p {
-  color: #333;
+.card-preco {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.card-preco strong {
+  font-size: 1.3rem;
+  color: #000;
   font-weight: bold;
-  margin: 0.2rem 0;
 }
 
-.card small {
+.card-preco span {
+  font-size: 0.9rem;
   color: #666;
+}
+
+.card-local {
+  margin-top: 4px;
+}
+
+.card-local small {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.btn-alugar {
+  margin-top: auto;
+  padding: 10px 16px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.btn-alugar:hover:not(:disabled) {
+  background-color: #333;
+}
+
+.btn-alugar:disabled,
+.btn-disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.card.indisponivel {
+  opacity: 0.8;
 }
 
 .modal-overlay {
@@ -146,155 +254,42 @@ body {
   cursor: pointer;
 }
 
-
-/* Responsividade */
-@media (max-width: 1024px) {
-  .cards {
-    padding: 1rem 3rem 3rem 3rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .cards {
-    padding: 1rem 1.5rem 3rem 1.5rem;
-  }
-
-.page-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ===== Cabeçalho ===== */
-.explore-header {
+.no-results {
   text-align: center;
-  margin: 3rem 1rem 2rem 1rem;
+  padding: 3rem 2rem;
+  margin: 2rem auto;
+  max-width: 600px;
 }
 
-.explore-header h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.explore-header p {
-  color: #444;
-}
-
-/* ===== Cards ===== */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  justify-items: center;
-  padding: 0.5rem 6rem 3rem 6rem;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.card {
-  background-color: #FFFFFF;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  padding: 1.5rem;
-  width: 220px;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: scale(1.03);
-}
-
-.card h3 {
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-}
-
-.card p {
-  color: #333;
-  font-weight: bold;
-  margin: 0.2rem 0;
-}
-
-.card small {
+.no-results p {
+  font-size: 1.2rem;
   color: #666;
+  margin-bottom: 1.5rem;
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.modal {
-  background: #fff;
-  padding: 2rem;
-  width: 420px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.modal h2 {
-  text-align: center;
-  font-size: 1.6rem;
-  margin-top: 0;
-}
-
-.modal form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.modal input,
-.modal textarea,
-.modal select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-}
-
-.btn-enviar {
-  background: #4CAF50;
+.btn-limpar-filtros {
+  padding: 12px 24px;
+  background-color: #000;
   color: white;
-  padding: 10px 16px;
-  border-radius: 6px;
   border: none;
-  cursor: pointer;
-}
-
-.btn-cancelar {
-  background: #d9534f;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-add-item {
-  margin-top: 1rem;
-  padding: 10px 20px;
   border-radius: 8px;
-  background: #000;
-  color: white;
-  border: none;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.btn-limpar-filtros:hover {
+  background-color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-limpar-filtros:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
 /* Responsividade */
 @media (max-width: 1024px) {
@@ -306,7 +301,5 @@ body {
 @media (max-width: 768px) {
   .cards {
     padding: 1rem 1.5rem 3rem 1.5rem;
-  }
-}
   }
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
+import { Lock, Mail, User, ArrowLeft, CheckCircle2 } from "lucide-react";
 
 export function EsqueceuSenha() {
   const [cpf, setCpf] = useState("");
@@ -119,6 +120,9 @@ export function EsqueceuSenha() {
 
       <div className="recuperacao-container">
         <div className="recuperacao-header">
+          <div className="header-icon">
+            {etapa === 1 ? <Lock size={32} /> : <CheckCircle2 size={32} />}
+          </div>
           <h2>Recuperar Senha</h2>
           <p>
             {etapa === 1 
@@ -151,7 +155,10 @@ export function EsqueceuSenha() {
         {etapa === 1 ? (
           <form onSubmit={handleValidarUsuario}>
             <div className="form-group-recuperacao">
-              <label htmlFor="cpf">CPF</label>
+              <label htmlFor="cpf">
+                <User size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                CPF
+              </label>
               <input 
                 type="text"
                 id="cpf"
@@ -165,7 +172,10 @@ export function EsqueceuSenha() {
             </div>
 
             <div className="form-group-recuperacao">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">
+                <Mail size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                Email
+              </label>
               <input 
                 type="email"
                 id="email"
@@ -195,6 +205,7 @@ export function EsqueceuSenha() {
           <form onSubmit={handleRedefinirSenha}>
             <div className="form-group-recuperacao">
               <label htmlFor="novaSenha">
+                <Lock size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                 Nova Senha
                 {novaSenha && (
                   <span className={`senha-strength ${forcaSenha}`}>
@@ -214,20 +225,42 @@ export function EsqueceuSenha() {
                 onChange={(e) => setNovaSenha(e.target.value)}
                 minLength={6}
               />
+              {novaSenha && (
+                <div className="senha-strength-bar">
+                  <div 
+                    className={`strength-indicator ${forcaSenha}`}
+                    style={{ 
+                      width: forcaSenha === "fraca" ? "33%" : forcaSenha === "media" ? "66%" : "100%"
+                    }}
+                  ></div>
+                </div>
+              )}
             </div>
 
             <div className="form-group-recuperacao">
-              <label htmlFor="confirmarSenha">Confirmar Nova Senha</label>
+              <label htmlFor="confirmarSenha">
+                <Lock size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                Confirmar Nova Senha
+              </label>
               <input
                 type="password"
                 id="confirmarSenha"
-                className="input-field-recuperacao"
+                className={`input-field-recuperacao ${confirmarSenha && novaSenha !== confirmarSenha ? 'input-error' : confirmarSenha && novaSenha === confirmarSenha ? 'input-success' : ''}`}
                 placeholder="Digite a senha novamente"
                 required
                 value={confirmarSenha}
                 onChange={(e) => setConfirmarSenha(e.target.value)}
                 minLength={6}
               />
+              {confirmarSenha && (
+                <div className="senha-match-indicator">
+                  {novaSenha === confirmarSenha ? (
+                    <span className="match-success">✓ Senhas coincidem</span>
+                  ) : (
+                    <span className="match-error">✗ Senhas não coincidem</span>
+                  )}
+                </div>
+              )}
             </div>
 
             {erro && <div className="mensagem-erro">{erro}</div>}
@@ -255,7 +288,10 @@ export function EsqueceuSenha() {
         )}
 
         <div className="back-to-login">
-          <a href="/login">← Voltar para o login</a>
+          <a href="/login">
+            <ArrowLeft size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+            Voltar para o login
+          </a>
         </div>
       </div>
     </div>

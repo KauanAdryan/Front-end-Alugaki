@@ -15,18 +15,42 @@ import { MyItens } from "./pages/Itens.tsx"
 import './styles/Itens.css'
 import { EsqueceuSenha } from "./pages/esqueceuSenha.tsx"
 import './styles/esqueceuSenha.css'
+import { DetalhesEquipamento } from "./pages/DetalhesEquipamento.tsx"
+import './styles/DetalhesEquipamento.css'
+import { ProtectedRoute } from "./components/ProtectedRoute.tsx"
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path= "/" element={<Homepage />} />
         <Route path= "/login" element={<LoginPage />} />
         <Route path= "/cadastro" element={<CadastroPage />} />
-        <Route path= "/perfil" element={<PerfilPage />} />
-        <Route path= "/mensagens" element={<Mensagens />} />
-        <Route path= "/itens" element={<MyItens/>} />
         <Route path= "/esqueceu-senha" element={<EsqueceuSenha/>} />
+        <Route path= "/" element={
+          <ProtectedRoute>
+            <Homepage />
+          </ProtectedRoute>
+        } />
+        <Route path= "/perfil" element={
+          <ProtectedRoute>
+            <PerfilPage />
+          </ProtectedRoute>
+        } />
+        <Route path= "/mensagens" element={
+          <ProtectedRoute>
+            <Mensagens />
+          </ProtectedRoute>
+        } />
+        <Route path= "/itens" element={
+          <ProtectedRoute>
+            <MyItens/>
+          </ProtectedRoute>
+        } />
+        <Route path= "/equipamento/:id" element={
+          <ProtectedRoute>
+            <DetalhesEquipamento />
+          </ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   )

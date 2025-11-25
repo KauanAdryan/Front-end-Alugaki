@@ -32,41 +32,151 @@ body {
 /* ===== Cards ===== */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  max-width: 1280px;
   gap: 1.5rem;
   justify-items: center;
   padding: 0 0 3rem 0;
   margin: 0 auto;
-  width: 100%;
+  margin-left: 106px;
+  width: 1280px;
   box-sizing: border-box;
+}
+
+@media (min-width: 1400px) {
+  .cards {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 1500px) {
+  .cards {
+    margin-left: auto;
+    width: 100%;
+    max-width: 1280px;
+    padding: 0 2rem 3rem 2rem;
+  }
 }
 
 .card {
   background-color: #FFFFFF;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  padding: 1.5rem;
+  padding: 0;
   width: 220px;
+  min-height: 380px;
   transition: transform 0.2s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
   transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.card-image {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f0f0f0;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.card:hover .card-image img {
+  transform: scale(1.05);
+}
+
+.badge-indisponivel {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #f44336;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.card-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: space-between;
 }
 
 .card h3 {
-  margin-bottom: 0.5rem;
+  margin: 0;
   font-size: 1.1rem;
+  font-weight: 600;
+  color: #000;
+  line-height: 1.3;
 }
 
-.card p {
-  color: #333;
+.card-preco {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.card-preco strong {
+  font-size: 1.3rem;
+  color: #000;
   font-weight: bold;
-  margin: 0.2rem 0;
 }
 
-.card small {
+.card-preco span {
+  font-size: 0.9rem;
   color: #666;
+}
+
+.card-local {
+  margin-top: 4px;
+}
+
+.card-local small {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.btn-alugar {
+  margin-top: auto;
+  padding: 10px 16px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.btn-alugar:hover:not(:disabled) {
+  background-color: #333;
+}
+
+.btn-alugar:disabled,
+.btn-disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.card.indisponivel {
+  opacity: 0.8;
 }
 
 .modal-overlay {
@@ -150,6 +260,43 @@ body {
   .cards {
     padding: 1rem 3rem 3rem 3rem;
   }
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.no-results p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.btn-limpar-filtros {
+  padding: 12px 24px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-limpar-filtros:hover {
+  background-color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-limpar-filtros:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {

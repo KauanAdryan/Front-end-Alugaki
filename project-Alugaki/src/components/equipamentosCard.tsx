@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { type Equipamento } from "../mocks/equipamentosData";
 
 interface EquipamentoCardProps {
@@ -6,8 +6,18 @@ interface EquipamentoCardProps {
 }
 
 export function EquipamentoCard({ equipamento }: EquipamentoCardProps) {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/equipamento/${equipamento.id}`);
+  };
+
   return (
-    <div className={`card ${!equipamento.disponivel ? 'indisponivel' : ''}`}>
+    <div 
+      className={`card ${!equipamento.disponivel ? 'indisponivel' : ''}`}
+      onClick={handleCardClick}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="card-image">
         <img 
           src={equipamento.imagem} 
@@ -26,11 +36,6 @@ export function EquipamentoCard({ equipamento }: EquipamentoCardProps) {
       <div className="card-content">
         <h3>{equipamento.nome}</h3>
         
-        <div className="card-avaliacao">
-          <Star size={16} fill="currentColor" />
-          <span>{equipamento.avaliacao}</span>
-        </div>
-        
         <div className="card-preco">
           <strong>R${equipamento.preco}</strong>
           <span>/dia</span>
@@ -43,6 +48,12 @@ export function EquipamentoCard({ equipamento }: EquipamentoCardProps) {
         <button 
           className={`btn-alugar ${!equipamento.disponivel ? 'btn-disabled' : ''}`}
           disabled={!equipamento.disponivel}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (equipamento.disponivel) {
+              handleCardClick();
+            }
+          }}
         >
           {equipamento.disponivel ? 'Alugar Agora' : 'Indisponível'}
         </button>

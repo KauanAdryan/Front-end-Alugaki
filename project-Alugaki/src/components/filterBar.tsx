@@ -1,8 +1,97 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export function Filtros(){
+interface FiltrosProps {
+  filtros: {
+    pesquisa: string;
+    categorias: string[];
+    locais: string[];
+    faixasPreco: string[];
+    apenasDisponiveis: boolean;
+  };
+  onFiltrosChange: (filtros: any) => void;
+  onLimparFiltros: () => void;
+}
+
+export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosProps){
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
+    const [pesquisaLocal, setPesquisaLocal] = useState(filtros.pesquisa);
+    const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<string[]>(filtros.categorias);
+    const [locaisSelecionados, setLocaisSelecionados] = useState<string[]>(filtros.locais);
+    const [faixasPrecoSelecionadas, setFaixasPrecoSelecionadas] = useState<string[]>(filtros.faixasPreco);
+    const [apenasDisponiveis, setApenasDisponiveis] = useState(filtros.apenasDisponiveis);
+
+    // Sincronizar pesquisa em tempo real
+    useEffect(() => {
+      const timeoutId = setTimeout(() => {
+        onFiltrosChange({ pesquisa: pesquisaLocal });
+      }, 300); // Debounce de 300ms
+      
+      return () => clearTimeout(timeoutId);
+    }, [pesquisaLocal]);
+
+    // Sincronizar estado local quando filtros externos mudam (apenas quando realmente mudarem)
+    useEffect(() => {
+      if (filtros.pesquisa !== pesquisaLocal) {
+        setPesquisaLocal(filtros.pesquisa);
+      }
+      if (JSON.stringify(filtros.categorias) !== JSON.stringify(categoriasSelecionadas)) {
+        setCategoriasSelecionadas(filtros.categorias);
+      }
+      if (JSON.stringify(filtros.locais) !== JSON.stringify(locaisSelecionados)) {
+        setLocaisSelecionados(filtros.locais);
+      }
+      if (JSON.stringify(filtros.faixasPreco) !== JSON.stringify(faixasPrecoSelecionadas)) {
+        setFaixasPrecoSelecionadas(filtros.faixasPreco);
+      }
+      if (filtros.apenasDisponiveis !== apenasDisponiveis) {
+        setApenasDisponiveis(filtros.apenasDisponiveis);
+      }
+    }, [filtros]);
+
+    const handleCategoriaChange = (categoria: string) => {
+      setCategoriasSelecionadas(prev => 
+        prev.includes(categoria) 
+          ? prev.filter(c => c !== categoria)
+          : [...prev, categoria]
+      );
+    };
+
+    const handleLocalChange = (local: string) => {
+      setLocaisSelecionados(prev => 
+        prev.includes(local) 
+          ? prev.filter(l => l !== local)
+          : [...prev, local]
+      );
+    };
+
+    const handleFaixaPrecoChange = (faixa: string) => {
+      setFaixasPrecoSelecionadas(prev => 
+        prev.includes(faixa) 
+          ? prev.filter(f => f !== faixa)
+          : [...prev, faixa]
+      );
+    };
+
+    const handleAplicarFiltros = () => {
+      onFiltrosChange({
+        categorias: categoriasSelecionadas,
+        locais: locaisSelecionados,
+        faixasPreco: faixasPrecoSelecionadas,
+        apenasDisponiveis: apenasDisponiveis
+      });
+      setSidebarOpen(false);
+    };
+
+    const handleLimparFiltros = () => {
+      setCategoriasSelecionadas([]);
+      setLocaisSelecionados([]);
+      setFaixasPrecoSelecionadas([]);
+      setApenasDisponiveis(false);
+      setPesquisaLocal("");
+      onLimparFiltros();
+      setSidebarOpen(false);
+    };
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
@@ -58,7 +147,12 @@ export function Filtros(){
             </div>
 
             <div className="search-bar">
-                <input type="text" placeholder="Procurar equipamento..." />
+                <input 
+                  type="text" 
+                  placeholder="Procurar equipamento..." 
+                  value={pesquisaLocal}
+                  onChange={(e) => setPesquisaLocal(e.target.value)}
+                />
             </div>
 
 
@@ -91,28 +185,40 @@ export function Filtros(){
                 </button>
             </div>
 
-            <div className="search-bar">
-                <input type="text" placeholder="Procurar equipamento..." />
-            </div>
-
             <div className="sidebar-content">
                 <div className="filter-section">
                     <h3>Preço</h3>
                     <div className="filter-options">
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={faixasPrecoSelecionadas.includes("ate30")}
+                              onChange={() => handleFaixaPrecoChange("ate30")}
+                            />
                             <span>Até R$ 30</span>
                         </label>
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={faixasPrecoSelecionadas.includes("30-50")}
+                              onChange={() => handleFaixaPrecoChange("30-50")}
+                            />
                             <span>R$ 30 - R$ 50</span>
                         </label>
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={faixasPrecoSelecionadas.includes("50-100")}
+                              onChange={() => handleFaixaPrecoChange("50-100")}
+                            />
                             <span>R$ 50 - R$ 100</span>
                         </label>
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={faixasPrecoSelecionadas.includes("acima100")}
+                              onChange={() => handleFaixaPrecoChange("acima100")}
+                            />
                             <span>Acima de R$ 100</span>
                         </label>
                     </div>
@@ -122,19 +228,35 @@ export function Filtros(){
                     <h3>Categoria</h3>
                     <div className="filter-options">
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={categoriasSelecionadas.includes("Instrumentos")}
+                              onChange={() => handleCategoriaChange("Instrumentos")}
+                            />
                             <span>Instrumentos</span>
                         </label>
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={categoriasSelecionadas.includes("Amplificadores")}
+                              onChange={() => handleCategoriaChange("Amplificadores")}
+                            />
                             <span>Amplificadores</span>
                         </label>
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={categoriasSelecionadas.includes("Sistemas de PA")}
+                              onChange={() => handleCategoriaChange("Sistemas de PA")}
+                            />
                             <span>Sistemas de PA</span>
                         </label>
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={categoriasSelecionadas.includes("Acessórios")}
+                              onChange={() => handleCategoriaChange("Acessórios")}
+                            />
                             <span>Acessórios</span>
                         </label>
                     </div>
@@ -144,20 +266,52 @@ export function Filtros(){
                     <h3>Localização</h3>
                     <div className="filter-options">
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={locaisSelecionados.includes("São Paulo")}
+                              onChange={() => handleLocalChange("São Paulo")}
+                            />
                             <span>São Paulo</span>
                         </label>
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={locaisSelecionados.includes("Rio de Janeiro")}
+                              onChange={() => handleLocalChange("Rio de Janeiro")}
+                            />
                             <span>Rio de Janeiro</span>
                         </label>
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={locaisSelecionados.includes("Belo Horizonte")}
+                              onChange={() => handleLocalChange("Belo Horizonte")}
+                            />
                             <span>Belo Horizonte</span>
                         </label>
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={locaisSelecionados.includes("Curitiba")}
+                              onChange={() => handleLocalChange("Curitiba")}
+                            />
                             <span>Curitiba</span>
+                        </label>
+                        <label>
+                            <input 
+                              type="checkbox" 
+                              checked={locaisSelecionados.includes("Porto Alegre")}
+                              onChange={() => handleLocalChange("Porto Alegre")}
+                            />
+                            <span>Porto Alegre</span>
+                        </label>
+                        <label>
+                            <input 
+                              type="checkbox" 
+                              checked={locaisSelecionados.includes("Brasília")}
+                              onChange={() => handleLocalChange("Brasília")}
+                            />
+                            <span>Brasília</span>
                         </label>
                     </div>
                 </div>
@@ -166,20 +320,20 @@ export function Filtros(){
                     <h3>Disponibilidade</h3>
                     <div className="filter-options">
                         <label>
-                            <input type="checkbox" />
+                            <input 
+                              type="checkbox" 
+                              checked={apenasDisponiveis}
+                              onChange={(e) => setApenasDisponiveis(e.target.checked)}
+                            />
                             <span>Disponível agora</span>
-                        </label>
-                        <label>
-                            <input type="checkbox" />
-                            <span>Próximos 7 dias</span>
                         </label>
                     </div>
                 </div>
             </div>
 
             <div className="sidebar-footer">
-                <button className="btn-clear">Limpar Filtros</button>
-                <button className="btn-apply">Aplicar Filtros</button>
+                <button className="btn-clear" onClick={handleLimparFiltros}>Limpar Filtros</button>
+                <button className="btn-apply" onClick={handleAplicarFiltros}>Aplicar Filtros</button>
             </div>
         </div>
     </div>

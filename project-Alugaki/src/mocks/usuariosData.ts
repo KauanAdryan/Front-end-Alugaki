@@ -33,7 +33,7 @@ export const usuariosData: Usuario[] = [
     estado: "SP",
     cep: "01234-567",
     bairro: "Centro",
-    avatar: null,
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces",
     avaliacao: 4.8,
     totalAlugueis: 15,
     membroDesde: new Date('2024-01-15')
@@ -52,7 +52,7 @@ export const usuariosData: Usuario[] = [
     estado: "RJ",
     cep: "22010-000",
     bairro: "Copacabana",
-    avatar: null,
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces",
     avaliacao: 4.9,
     totalAlugueis: 8,
     membroDesde: new Date('2024-02-20')

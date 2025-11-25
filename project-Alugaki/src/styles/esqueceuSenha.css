@@ -52,6 +52,13 @@
     text-align: center;
 }
 
+.header-icon {
+    margin-bottom: 1rem;
+    color: #000;
+    display: flex;
+    justify-content: center;
+}
+
 .recuperacao-header h2 {
     color: #000000;
     font-size: 24px;
@@ -141,7 +148,8 @@
 }
 
 .form-group-recuperacao label {
-    display: block;
+    display: flex;
+    align-items: center;
     color: #000000;
     font-weight: bold;
     margin-bottom: 8px;
@@ -165,6 +173,16 @@
     outline: none;
     border-color: #000000;
     background-color: #FFFFFF;
+}
+
+.input-field-recuperacao.input-error {
+    border-color: #D32F2F;
+    background-color: #FFEBEE;
+}
+
+.input-field-recuperacao.input-success {
+    border-color: #4CAF50;
+    background-color: #E8F5E9;
 }
 
 /* Mensagens */
@@ -385,7 +403,7 @@
 
 /* Estilos para validação de senha */
 .senha-strength {
-    margin-top: 8px;
+    margin-left: 8px;
     font-size: 12px;
     font-weight: normal;
 }
@@ -400,6 +418,48 @@
 
 .senha-strength.forte {
     color: #4CAF50;
+}
+
+.senha-strength-bar {
+    width: 100%;
+    height: 4px;
+    background-color: #E5E5E5;
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.strength-indicator {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-indicator.fraca {
+    background-color: #D32F2F;
+}
+
+.strength-indicator.media {
+    background-color: #FF9800;
+}
+
+.strength-indicator.forte {
+    background-color: #4CAF50;
+}
+
+.senha-match-indicator {
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+.match-success {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
+.match-error {
+    color: #D32F2F;
+    font-weight: 600;
 }
 
 /* Tooltip para informações */

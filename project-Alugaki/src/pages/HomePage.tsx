@@ -4,28 +4,56 @@ import { Filtros } from "../components/filterBar";
 import { EquipamentoCard } from "../components/equipamentosCard";
 import { equipamentosData, type Equipamento } from "../mocks/equipamentosData";
 
+interface FiltrosState {
+  pesquisa: string;
+  categorias: string[];
+  locais: string[];
+  faixasPreco: string[];
+  apenasDisponiveis: boolean;
+}
+
 export function Homepage() {
-  const [filtros, setFiltros] = useState({
-    categoria: "Todos",
-    local: "Todos",
-    precoMax: 100,
+  const [filtros, setFiltros] = useState<FiltrosState>({
+    pesquisa: "",
+    categorias: [],
+    locais: [],
+    faixasPreco: [],
     apenasDisponiveis: false
   });
 
   const equipamentosFiltrados = equipamentosData.filter((equipamento: Equipamento) => {
-    // Filtro por categoria
-    if (filtros.categoria !== "Todos" && equipamento.categoria !== filtros.categoria) {
+    // Filtro por pesquisa (nome)
+    if (filtros.pesquisa && !equipamento.nome.toLowerCase().includes(filtros.pesquisa.toLowerCase())) {
       return false;
     }
     
-    // Filtro por local
-    if (filtros.local !== "Todos" && equipamento.local !== filtros.local) {
+    // Filtro por categorias
+    if (filtros.categorias.length > 0) {
+      const categoriaMapeada = mapearCategoria(equipamento.categoria);
+      if (!filtros.categorias.includes(categoriaMapeada)) {
+        return false;
+      }
+    }
+    
+    // Filtro por locais
+    if (filtros.locais.length > 0 && !filtros.locais.includes(equipamento.local)) {
       return false;
     }
     
-    // Filtro por preço
-    if (equipamento.preco > filtros.precoMax) {
-      return false;
+    // Filtro por faixas de preço
+    if (filtros.faixasPreco.length > 0) {
+      const precoNoIntervalo = filtros.faixasPreco.some(faixa => {
+        switch(faixa) {
+          case "ate30": return equipamento.preco <= 30;
+          case "30-50": return equipamento.preco > 30 && equipamento.preco <= 50;
+          case "50-100": return equipamento.preco > 50 && equipamento.preco <= 100;
+          case "acima100": return equipamento.preco > 100;
+          default: return true;
+        }
+      });
+      if (!precoNoIntervalo) {
+        return false;
+      }
     }
     
     // Filtro por disponibilidade
@@ -36,6 +64,31 @@ export function Homepage() {
     return true;
   });
 
+  const mapearCategoria = (categoria: string): string => {
+    const mapeamento: { [key: string]: string } = {
+      "cordas": "Instrumentos",
+      "teclas": "Instrumentos",
+      "percussao": "Instrumentos",
+      "amplificadores": "Amplificadores",
+      "som": "Sistemas de PA"
+    };
+    return mapeamento[categoria] || "Acessórios";
+  };
+
+  const handleFiltrosChange = (novosFiltros: Partial<FiltrosState>) => {
+    setFiltros(prev => ({ ...prev, ...novosFiltros }));
+  };
+
+  const handleLimparFiltros = () => {
+    setFiltros({
+      pesquisa: "",
+      categorias: [],
+      locais: [],
+      faixasPreco: [],
+      apenasDisponiveis: false
+    });
+  };
+
   return (
     <div className="page-container">
       <Navbar />
@@ -45,11 +98,11 @@ export function Homepage() {
         <p>Explore uma vasta gama de equipamentos disponíveis para aluguel.</p>
       </header>
 
-      <Filtros />
-
-      <div className="results-info">
-        <p>{equipamentosFiltrados.length} equipamentos encontrados</p>
-      </div>
+      <Filtros 
+        filtros={filtros}
+        onFiltrosChange={handleFiltrosChange}
+        onLimparFiltros={handleLimparFiltros}
+      />
 
       <div className="cards">
         {equipamentosFiltrados.map((equipamento: Equipamento) => (
@@ -64,12 +117,7 @@ export function Homepage() {
         <div className="no-results">
           <p>Nenhum equipamento encontrado com os filtros selecionados.</p>
           <button 
-            onClick={() => setFiltros({
-              categoria: "Todos",
-              local: "Todos",
-              precoMax: 100,
-              apenasDisponiveis: false
-            })}
+            onClick={handleLimparFiltros}
             className="btn-limpar-filtros"
           >
             Limpar Filtros

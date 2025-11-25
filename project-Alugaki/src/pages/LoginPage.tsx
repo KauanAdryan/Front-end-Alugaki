@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
 
@@ -8,6 +8,14 @@ export function LoginPage() {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const navigate = useNavigate();
+
+  // Redireciona se já estiver logado
+  useEffect(() => {
+    const usuario = localStorage.getItem("usuario");
+    if (usuario) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   async function handleLogin(e: any) {
     e.preventDefault();
