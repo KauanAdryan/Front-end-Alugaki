@@ -1,7 +1,9 @@
-// Modo Mock: true para usar dados mockados, false para usar API real
-const USE_MOCK_DATA = true;
+// Modo Mock: true para usar dados mockados, false para usar BFF
+const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true' || false;
 
 import { usuariosData } from '../mocks/usuariosData';
+import httpClient from './httpClient';
+import { BFF_CONFIG } from '../config/bff.config';
 
 // Simulação de delay de rede
 const delay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
@@ -19,14 +21,13 @@ export const authService = {
       return mockUsuarios.map(({ senha, ...usuario }) => usuario);
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await fetch("http://localhost:8081/usuario");
-    //   return await response.json();
-    // } catch (error) {
-    //   console.error('Erro ao buscar usuários:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.get(BFF_CONFIG.ENDPOINTS.USUARIO);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+      throw error;
+    }
   },
 
   // Buscar usuário por ID
@@ -42,14 +43,13 @@ export const authService = {
       return usuarioSemSenha;
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await fetch(`http://localhost:8081/usuario/${id}`);
-    //   return await response.json();
-    // } catch (error) {
-    //   console.error('Erro ao buscar usuário:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.get(`${BFF_CONFIG.ENDPOINTS.USUARIO}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar usuário:', error);
+      throw error;
+    }
   },
 
   // Login - validar email e senha
@@ -69,17 +69,16 @@ export const authService = {
       return usuarioSemSenha;
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await fetch("http://localhost:8081/usuario");
-    //   const usuarios = await response.json();
-    //   const usuario = usuarios.find(u => u.email === email && u.senha === senha);
-    //   if (!usuario) throw new Error('Email ou senha incorretos');
-    //   return usuario;
-    // } catch (error) {
-    //   console.error('Erro ao fazer login:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.post(BFF_CONFIG.ENDPOINTS.USUARIO_LOGIN, {
+        email,
+        senha
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      throw error;
+    }
   },
 
   // Cadastrar novo usuário
@@ -119,19 +118,13 @@ export const authService = {
       return usuarioSemSenha;
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await fetch("http://localhost:8081/usuario", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(usuarioData)
-    //   });
-    //   if (!response.ok) throw new Error('Erro ao cadastrar usuário');
-    //   return await response.json();
-    // } catch (error) {
-    //   console.error('Erro ao cadastrar usuário:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.post(BFF_CONFIG.ENDPOINTS.USUARIO, usuarioData);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao cadastrar usuário:', error);
+      throw error;
+    }
   },
 
   // Validar usuário por CPF e email (para recuperação de senha)
@@ -149,17 +142,24 @@ export const authService = {
       return true;
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await fetch("http://localhost:8081/usuario");
-    //   const usuarios = await response.json();
-    //   const usuario = usuarios.find(u => u.cpf === cpf && u.email === email);
-    //   if (!usuario) throw new Error('CPF ou email não encontrados');
-    //   return true;
-    // } catch (error) {
-    //   console.error('Erro ao validar usuário:', error);
-    //   throw error;
-    // }
+    try {
+      // Busca todos os usuários e valida localmente
+      // Ou pode criar um endpoint específico no BFF para validação
+      const response = await httpClient.get(BFF_CONFIG.ENDPOINTS.USUARIO);
+      const usuarios = response.data;
+      const usuario = usuarios.find(
+        u => (u.cpf === cpf || u.cpfCnpj === cpf) && u.email === email
+      );
+      
+      if (!usuario) {
+        throw new Error('CPF ou email não encontrados');
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Erro ao validar usuário:', error);
+      throw error;
+    }
   },
 
   // Atualizar senha do usuário
@@ -182,25 +182,17 @@ export const authService = {
       return { sucesso: true };
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await fetch("http://localhost:8081/usuario");
-    //   const usuarios = await response.json();
-    //   const usuario = usuarios.find(u => u.cpf === cpf && u.email === email);
-    //   if (!usuario) throw new Error('Usuário não encontrado');
-    //   
-    //   const updateResponse = await fetch(`http://localhost:8081/usuario/${usuario.id}`, {
-    //     method: "PUT",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ ...usuario, senha: novaSenha })
-    //   });
-    //   
-    //   if (!updateResponse.ok) throw new Error('Erro ao atualizar senha');
-    //   return await updateResponse.json();
-    // } catch (error) {
-    //   console.error('Erro ao atualizar senha:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.post(BFF_CONFIG.ENDPOINTS.USUARIO_REDEFINIR_SENHA, {
+        cpf,
+        email,
+        novaSenha
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao atualizar senha:', error);
+      throw error;
+    }
   },
 
   // Atualizar usuário
@@ -223,19 +215,13 @@ export const authService = {
       return usuarioSemSenha;
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await fetch(`http://localhost:8081/usuario/${id}`, {
-    //     method: "PUT",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(usuarioData)
-    //   });
-    //   if (!response.ok) throw new Error('Erro ao atualizar usuário');
-    //   return await response.json();
-    // } catch (error) {
-    //   console.error('Erro ao atualizar usuário:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.put(`${BFF_CONFIG.ENDPOINTS.USUARIO}/${id}`, usuarioData);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+      throw error;
+    }
   }
 };
 

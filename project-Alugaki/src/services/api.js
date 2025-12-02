@@ -1,7 +1,9 @@
-// Modo Mock: true para usar dados mockados, false para usar API real
-const USE_MOCK_DATA = true;
+// Modo Mock: true para usar dados mockados, false para usar BFF
+const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true' || false;
 
 import { equipamentosData } from '../mocks/equipamentosData';
+import httpClient from './httpClient';
+import { BFF_CONFIG } from '../config/bff.config';
 
 // Simulação de delay de rede
 const delay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
@@ -18,14 +20,13 @@ export const produtoService = {
       return [...mockProdutos];
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await api.get('/produtos');
-    //   return response.data;
-    // } catch (error) {
-    //   console.error('Erro ao buscar produtos:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.get(BFF_CONFIG.ENDPOINTS.PRODUTO);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+      throw error;
+    }
   },
 
   // Buscar produto por ID
@@ -39,14 +40,13 @@ export const produtoService = {
       return produto;
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await api.get(`/produtos/${id}`);
-    //   return response.data;
-    // } catch (error) {
-    //   console.error('Erro ao buscar produto:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.get(`${BFF_CONFIG.ENDPOINTS.PRODUTO}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar produto:', error);
+      throw error;
+    }
   },
 
   // Criar novo produto
@@ -63,14 +63,13 @@ export const produtoService = {
       return novoProduto;
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await api.post('/produtos', produtoData);
-    //   return response.data;
-    // } catch (error) {
-    //   console.error('Erro ao criar produto:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.post(BFF_CONFIG.ENDPOINTS.PRODUTO, produtoData);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao criar produto:', error);
+      throw error;
+    }
   },
 
   // Atualizar produto
@@ -85,17 +84,17 @@ export const produtoService = {
       return mockProdutos[index];
     }
     
-    // Código original para API real (comentado)
-    // try {
-    //   const response = await api.put(`/produtos/${id}`, produtoData);
-    //   return response.data;
-    // } catch (error) {
-    //   console.error('Erro ao atualizar produto:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await httpClient.put(`${BFF_CONFIG.ENDPOINTS.PRODUTO}/${id}`, produtoData);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao atualizar produto:', error);
+      throw error;
+    }
   },
 
   // Deletar produto
+  // Nota: O BFF não tem endpoint DELETE para produto, mas mantemos a função caso seja adicionado
   async deleteProduto(id) {
     if (USE_MOCK_DATA) {
       await delay();
@@ -108,24 +107,16 @@ export const produtoService = {
       return produtoRemovido;
     }
     
-    // Código original para API real (comentado)
+    // Nota: O BFF não tem endpoint DELETE para produto no README
+    // Se for necessário, adicione o endpoint no BFF e descomente o código abaixo
     // try {
-    //   const response = await api.delete(`/produtos/${id}`);
+    //   const response = await httpClient.delete(`${BFF_CONFIG.ENDPOINTS.PRODUTO}/${id}`);
     //   return response.data;
     // } catch (error) {
     //   console.error('Erro ao deletar produto:', error);
     //   throw error;
     // }
+    
+    throw new Error('Endpoint DELETE não disponível no BFF');
   }
 };
-
-// Para usar API real, descomente o código abaixo e defina USE_MOCK_DATA = false
-// import axios from 'axios';
-// const API_BASE_URL = 'http://localhost:8081';
-// const api = axios.create({
-//   baseURL: API_BASE_URL,
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-// });
-// export default api;
