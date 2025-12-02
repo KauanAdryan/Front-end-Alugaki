@@ -12,6 +12,69 @@ const delay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
 let mockUsuarios = [...usuariosData];
 let nextId = Math.max(...usuariosData.map(u => u.id)) + 1;
 
+// Payload flat com todos os campos de endereço e contato em nível de raiz.
+const montarPayloadUsuario = (dados) => {
+  const numeroResidencia = dados.numero || dados.numeroResidencia || dados.numeroResidenc || '';
+  const enderecoTexto = [
+    dados.rua,
+    numeroResidencia ? `, ${numeroResidencia}` : '',
+    dados.bairro ? ` - ${dados.bairro}` : '',
+    dados.cidade ? `, ${dados.cidade}` : '',
+    dados.estado ? `/${dados.estado}` : '',
+    dados.cep ? ` - CEP: ${dados.cep}` : '',
+  ].join('').trim();
+
+  const payload = {
+    nome: dados.nome,
+    email: dados.email,
+    telefone: dados.telefone,
+    cpfCnpj: dados.cpfCnpj || dados.cpf,
+    contato: dados.telefone || dados.email,
+    endereco: enderecoTexto || dados.cep || dados.cidade || dados.estado || 'endereco n/d',
+    rua: dados.rua,
+    numero: numeroResidencia,
+    numeroResidencia,
+    numeroResidenc: numeroResidencia,
+    numeroResidencial: numeroResidencia,
+    bairro: dados.bairro,
+    cidade: dados.cidade,
+    estado: dados.estado,
+    cep: dados.cep,
+    logradouro: dados.rua,
+  };
+
+  if (dados.senha) {
+    payload.senha = dados.senha;
+  }
+
+  return payload;
+};
+
+// Normaliza resposta do backend para manter compatibilidade com o front (campos planos)
+const normalizarUsuario = (usuario) => {
+  if (!usuario) return usuario;
+
+  const contatoObj = typeof usuario.contato === 'object' ? usuario.contato : {};
+  const contatoStr = typeof usuario.contato === 'string' ? usuario.contato : undefined;
+  const enderecoObj = typeof usuario.endereco === 'object' ? usuario.endereco : {};
+  const enderecoStr = typeof usuario.endereco === 'string' ? usuario.endereco : undefined;
+
+  return {
+    ...usuario,
+    email: usuario.email || contatoObj.email,
+    telefone: usuario.telefone || contatoObj.telefone || contatoStr,
+    cpf: usuario.cpf || usuario.cpfCnpj,
+    cpfCnpj: usuario.cpfCnpj || usuario.cpf,
+    rua: usuario.rua || enderecoObj.rua,
+    numero: usuario.numero || enderecoObj.numero,
+    bairro: usuario.bairro || enderecoObj.bairro,
+    cidade: usuario.cidade || enderecoObj.cidade,
+    estado: usuario.estado || enderecoObj.estado,
+    cep: usuario.cep || enderecoObj.cep,
+    enderecoTexto: enderecoStr,
+  };
+};
+
 export const authService = {
   // Buscar todos os usuários
   async getUsuarios() {
@@ -23,7 +86,9 @@ export const authService = {
     
     try {
       const response = await httpClient.get(BFF_CONFIG.ENDPOINTS.USUARIO);
-      return response.data;
+      return Array.isArray(response.data)
+        ? response.data.map(normalizarUsuario)
+        : [];
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
       throw error;
@@ -45,7 +110,7 @@ export const authService = {
     
     try {
       const response = await httpClient.get(`${BFF_CONFIG.ENDPOINTS.USUARIO}/${id}`);
-      return response.data;
+      return normalizarUsuario(response.data);
     } catch (error) {
       console.error('Erro ao buscar usuário:', error);
       throw error;
@@ -74,7 +139,7 @@ export const authService = {
         email,
         senha
       });
-      return response.data;
+      return normalizarUsuario(response.data);
     } catch (error) {
       console.error('Erro ao fazer login:', error);
       throw error;
@@ -119,8 +184,10 @@ export const authService = {
     }
     
     try {
-      const response = await httpClient.post(BFF_CONFIG.ENDPOINTS.USUARIO, usuarioData);
-      return response.data;
+      const payload = montarPayloadUsuario(usuarioData);
+      console.debug('cadastro payload', payload);
+      const response = await httpClient.post(BFF_CONFIG.ENDPOINTS.USUARIO, payload);
+      return normalizarUsuario(response.data);
     } catch (error) {
       console.error('Erro ao cadastrar usuário:', error);
       throw error;
@@ -146,7 +213,9 @@ export const authService = {
       // Busca todos os usuários e valida localmente
       // Ou pode criar um endpoint específico no BFF para validação
       const response = await httpClient.get(BFF_CONFIG.ENDPOINTS.USUARIO);
-      const usuarios = response.data;
+      const usuarios = Array.isArray(response.data)
+        ? response.data.map(normalizarUsuario)
+        : [];
       const usuario = usuarios.find(
         u => (u.cpf === cpf || u.cpfCnpj === cpf) && u.email === email
       );
@@ -216,12 +285,13 @@ export const authService = {
     }
     
     try {
-      const response = await httpClient.put(`${BFF_CONFIG.ENDPOINTS.USUARIO}/${id}`, usuarioData);
-      return response.data;
+      const payload = montarPayloadUsuario(usuarioData);
+      console.debug('atualizar usuario payload', payload);
+      const response = await httpClient.put(`${BFF_CONFIG.ENDPOINTS.USUARIO}/${id}`, payload);
+      return normalizarUsuario(response.data);
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error);
       throw error;
     }
   }
 };
-
