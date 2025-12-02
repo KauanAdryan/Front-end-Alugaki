@@ -19,6 +19,22 @@ body {
   margin: 3rem 1rem 2rem 1rem;
 }
 
+.explore-header > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.explore-header > div > div {
+  flex: 1;
+  min-width: 300px;
+}
+
 .explore-header h1 {
   font-size: 2.5rem;
   font-weight: bold;
@@ -27,6 +43,17 @@ body {
 
 .explore-header p {
   color: #444;
+}
+
+@media (max-width: 768px) {
+  .explore-header > div {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .explore-header > div > div {
+    width: 100%;
+  }
 }
 
 /* ===== Cards ===== */
@@ -200,10 +227,27 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
+.modal-cadastro {
+  background: #fff;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
 .modal h2 {
   text-align: center;
   font-size: 1.6rem;
   margin-top: 0;
+}
+
+.modal-cadastro h2 {
+  font-size: 1.6rem;
+  margin-top: 0;
+  color: #000;
 }
 
 .modal form {
@@ -212,12 +256,60 @@ body {
   gap: 12px;
 }
 
+.modal-cadastro form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-cadastro form > div {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.modal-cadastro label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
 .modal input,
 .modal textarea,
 .modal select {
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
+}
+
+.modal-cadastro input,
+.modal-cadastro textarea,
+.modal-cadastro select {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.modal-cadastro input:focus,
+.modal-cadastro textarea:focus,
+.modal-cadastro select:focus {
+  outline: none;
+  border-color: #000;
+}
+
+.modal-cadastro textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modal-cadastro input[type="file"] {
+  padding: 8px;
+  border: 1px dashed #ddd;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .modal-buttons {
@@ -233,6 +325,17 @@ body {
   border-radius: 6px;
   border: none;
   cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-enviar:hover:not(:disabled) {
+  background: #45a049;
+}
+
+.btn-enviar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-cancelar {
@@ -242,16 +345,37 @@ body {
   border-radius: 6px;
   border: none;
   cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
 }
 
-.btn-add-item {
-  margin-top: 1rem;
-  padding: 10px 20px;
-  border-radius: 8px;
-  background: #000;
+.btn-cancelar:hover:not(:disabled) {
+  background: #c9302c;
+}
+
+.btn-cancelar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-cadastrar-item {
+  padding: 12px 24px;
+  background-color: #000;
   color: white;
   border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-cadastrar-item:hover {
+  background-color: #333;
 }
 
 .no-results {

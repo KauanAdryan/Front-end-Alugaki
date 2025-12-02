@@ -9,13 +9,14 @@ export function LoginPage() {
   const [erro, setErro] = useState("");
   const navigate = useNavigate();
 
+  // Comentado temporariamente para permitir acesso sem login
   // Redireciona se já estiver logado
-  useEffect(() => {
-    const usuario = localStorage.getItem("usuario");
-    if (usuario) {
-      navigate("/");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const usuario = localStorage.getItem("usuario");
+  //   if (usuario) {
+  //     navigate("/");
+  //   }
+  // }, [navigate]);
 
   async function handleLogin(e: any) {
     e.preventDefault();

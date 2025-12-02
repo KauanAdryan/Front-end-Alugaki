@@ -5,11 +5,12 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const usuario = localStorage.getItem("usuario");
+  // Comentado temporariamente para permitir acesso sem login
+  // const usuario = localStorage.getItem("usuario");
 
-  if (!usuario) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (!usuario) {
+  //   return <Navigate to="/login" replace />;
+  // }
 
   return <>{children}</>;
 }

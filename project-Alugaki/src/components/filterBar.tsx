@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+// @ts-ignore - hook em JS sem tipos
+import { useProdutos } from "../hooks/useProducts";
+import { X } from "lucide-react";
 
 interface FiltrosProps {
   filtros: {
@@ -13,6 +16,7 @@ interface FiltrosProps {
 }
 
 export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosProps){
+    const { fetchProdutos, criarProduto } = useProdutos();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [pesquisaLocal, setPesquisaLocal] = useState(filtros.pesquisa);
@@ -20,6 +24,19 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
     const [locaisSelecionados, setLocaisSelecionados] = useState<string[]>(filtros.locais);
     const [faixasPrecoSelecionadas, setFaixasPrecoSelecionadas] = useState<string[]>(filtros.faixasPreco);
     const [apenasDisponiveis, setApenasDisponiveis] = useState(filtros.apenasDisponiveis);
+    
+    // Estados do formulário de cadastro
+    const [formData, setFormData] = useState({
+        nome: "",
+        descricao: "",
+        preco: "",
+        local: "",
+        categoria: "",
+        imagem: null as File | null,
+        imagemPreview: ""
+    });
+    const [erro, setErro] = useState("");
+    const [loadingCadastro, setLoadingCadastro] = useState(false);
 
     // Sincronizar pesquisa em tempo real
     useEffect(() => {
@@ -97,8 +114,93 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
         setSidebarOpen(!sidebarOpen);
     };
 
-        const toggleAddItem = () => {
+    const toggleAddItem = () => {
         setModalOpen(!modalOpen);
+        if (!modalOpen) {
+            setErro("");
+            setFormData({
+                nome: "",
+                descricao: "",
+                preco: "",
+                local: "",
+                categoria: "",
+                imagem: null,
+                imagemPreview: ""
+            });
+        }
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFormData(prev => ({
+                ...prev,
+                imagem: file,
+                imagemPreview: URL.createObjectURL(file)
+            }));
+        }
+    };
+
+    const handleSubmitCadastro = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setErro("");
+        setLoadingCadastro(true);
+
+        // Validações
+        if (!formData.nome.trim()) {
+            setErro("Nome é obrigatório");
+            setLoadingCadastro(false);
+            return;
+        }
+        if (!formData.preco || parseFloat(formData.preco) <= 0) {
+            setErro("Preço deve ser maior que zero");
+            setLoadingCadastro(false);
+            return;
+        }
+        if (!formData.local.trim()) {
+            setErro("Local é obrigatório");
+            setLoadingCadastro(false);
+            return;
+        }
+        if (!formData.categoria) {
+            setErro("Categoria é obrigatória");
+            setLoadingCadastro(false);
+            return;
+        }
+
+        try {
+            // Converter imagem para base64 ou URL
+            let imagemUrl = "";
+            if (formData.imagem) {
+                const reader = new FileReader();
+                imagemUrl = await new Promise<string>((resolve, reject) => {
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(formData.imagem!);
+                });
+            } else {
+                imagemUrl = "https://via.placeholder.com/320x220?text=Sem+Imagem";
+            }
+
+            const novoProduto = {
+                nome: formData.nome.trim(),
+                descricao: formData.descricao.trim(),
+                preco: parseFloat(formData.preco),
+                local: formData.local.trim(),
+                categoria: formData.categoria,
+                imagem: imagemUrl,
+                disponivel: true,
+                avaliacao: 0
+            };
+
+            await criarProduto(novoProduto);
+            await fetchProdutos();
+            toggleAddItem(); // Fecha o modal
+        } catch (error: any) {
+            setErro(error.message || "Erro ao cadastrar produto");
+        } finally {
+            setLoadingCadastro(false);
+        }
     };
 
     return(
@@ -120,29 +222,8 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
             </button>
 
             <div className="add_bar">
-                <button className="button-add-item" onClick={toggleAddItem}> + Adicionar Item
-                <svg width="0" height="0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <label htmlFor="name">Nome do Item</label>
-                    <input type="text" id="name" className="input-field" placeholder="Insira o nome do item" required />
-                    <label htmlFor="description">Descrição</label>
-                    <input type="text" id="description" className="input-field" placeholder="Insira a descrição do item" required />
-                    <label htmlFor="image">Foto do Item</label>
-                    <input type="file" id="image" className="input-field" accept="image/*" required />
-                    <label htmlFor="select">Categoria</label>
-                    <select id="select" className="input-field" required >
-                        <option value="">Selecione a categoria</option>
-                        <option value="instrumentos">Instrumentos</option>
-                        <option value="amplificadores">Amplificadores</option>
-                        <option value="sistemas-pa">Sistemas de PA</option>
-                        <option value="acessorios">Acessórios</option>
-                    </select>
-                    <label htmlFor="Condição">Condição do Item</label>
-                    <input type="text" id="condition" className="input-field" placeholder="Insira a condição do item" required />
-                    <label htmlFor="price">Preço por dia (R$)</label>
-                    <input type="number" id="price" className="input-field" placeholder="Insira o preço por dia" required />
-                    <label htmlFor="availability">Disponibilidade</label>
-                    <input type="text" id="availability" className="input-field" placeholder="Insira a disponibilidade do item" required />
-                </svg>
+                <button className="button-add-item" onClick={toggleAddItem}>
+                    + Adicionar Item
                 </button>
             </div>
 
@@ -170,18 +251,6 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
-                </button>
-            </div>
-
-        {modalOpen && (
-            <div className="modalAdd-overlay" onClick={toggleAddItem}></div>
-        )}
-
-        <div className={`modalItem ${modalOpen ? 'modal-open' : ''}`}>
-            <div className="modal-header">
-                <h2>Adicionar Item</h2>
-                <button className="close-button" onClick={toggleAddItem}>
-
                 </button>
             </div>
 
@@ -336,7 +405,170 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
                 <button className="btn-apply" onClick={handleAplicarFiltros}>Aplicar Filtros</button>
             </div>
         </div>
-    </div>
+
+        {/* Modal de Adicionar Item */}
+        {modalOpen && (
+            <div className="modalAdd-overlay" onClick={toggleAddItem}></div>
+        )}
+
+        <div className={`modalItem ${modalOpen ? 'modal-open' : ''}`}>
+            <div className="modal-header">
+                <h2>Adicionar Item</h2>
+                <button className="close-button" onClick={toggleAddItem}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <form onSubmit={handleSubmitCadastro} style={{ padding: '1.5rem' }}>
+                <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="modal-nome" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Nome do Item *</label>
+                    <input
+                        type="text"
+                        id="modal-nome"
+                        value={formData.nome}
+                        onChange={(e) => setFormData(prev => ({ ...prev, nome: e.target.value }))}
+                        placeholder="Ex: Guitarra Elétrica"
+                        required
+                        style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
+                    />
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="modal-descricao" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Descrição</label>
+                    <textarea
+                        id="modal-descricao"
+                        value={formData.descricao}
+                        onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
+                        placeholder="Descreva o equipamento..."
+                        rows={3}
+                        style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd', resize: 'vertical' }}
+                    />
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="modal-preco" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Preço por dia (R$) *</label>
+                    <input
+                        type="number"
+                        id="modal-preco"
+                        value={formData.preco}
+                        onChange={(e) => setFormData(prev => ({ ...prev, preco: e.target.value }))}
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                        required
+                        style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
+                    />
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="modal-local" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Localização *</label>
+                    <input
+                        type="text"
+                        id="modal-local"
+                        value={formData.local}
+                        onChange={(e) => setFormData(prev => ({ ...prev, local: e.target.value }))}
+                        placeholder="Ex: São Paulo"
+                        required
+                        style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
+                    />
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="modal-categoria" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Categoria *</label>
+                    <select
+                        id="modal-categoria"
+                        value={formData.categoria}
+                        onChange={(e) => setFormData(prev => ({ ...prev, categoria: e.target.value }))}
+                        required
+                        style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
+                    >
+                        <option value="">Selecione a categoria</option>
+                        <option value="cordas">Cordas</option>
+                        <option value="teclas">Teclas</option>
+                        <option value="percussao">Percussão</option>
+                        <option value="amplificadores">Amplificadores</option>
+                        <option value="som">Sistemas de PA</option>
+                        <option value="acessorios">Acessórios</option>
+                    </select>
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="modal-imagem" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Foto do Item</label>
+                    <input
+                        type="file"
+                        id="modal-imagem"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        style={{ width: '100%', padding: '0.5rem' }}
+                    />
+                    {formData.imagemPreview && (
+                        <div style={{ marginTop: '0.5rem' }}>
+                            <img 
+                                src={formData.imagemPreview} 
+                                alt="Preview" 
+                                style={{ 
+                                    maxWidth: '100%', 
+                                    maxHeight: '200px', 
+                                    borderRadius: '8px',
+                                    objectFit: 'cover'
+                                }} 
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {erro && (
+                    <div style={{ 
+                        color: 'red', 
+                        marginBottom: '1rem', 
+                        padding: '0.5rem',
+                        backgroundColor: '#ffe6e6',
+                        borderRadius: '4px'
+                    }}>
+                        {erro}
+                    </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                    <button 
+                        type="button"
+                        onClick={toggleAddItem}
+                        disabled={loadingCadastro}
+                        style={{
+                            flex: 1,
+                            padding: '0.75rem',
+                            backgroundColor: '#f5f5f5',
+                            color: '#333',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontWeight: '500'
+                        }}
+                    >
+                        Cancelar
+                    </button>
+                    <button 
+                        type="submit"
+                        disabled={loadingCadastro}
+                        style={{
+                            flex: 1,
+                            padding: '0.75rem',
+                            backgroundColor: '#007bff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontWeight: '500'
+                        }}
+                    >
+                        {loadingCadastro ? 'Cadastrando...' : 'Cadastrar'}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
     </>
     )

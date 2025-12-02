@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Navbar } from "../components/Navbar";
 import { Filtros } from "../components/filterBar";
 import { EquipamentoCard } from "../components/equipamentosCard";
-import { equipamentosData, type Equipamento } from "../mocks/equipamentosData";
+// @ts-ignore - hook em JS sem tipos
+import { useProdutos } from "../hooks/useProducts";
+import { type Equipamento } from "../mocks/equipamentosData";
 
 interface FiltrosState {
   pesquisa: string;
@@ -13,6 +15,7 @@ interface FiltrosState {
 }
 
 export function MyItens() {
+  const { produtos, loading } = useProdutos();
   const [filtros, setFiltros] = useState<FiltrosState>({
     pesquisa: "",
     categorias: [],
@@ -23,7 +26,7 @@ export function MyItens() {
 
   // Filtrar apenas os itens do usuário logado (mockado)
   // Em produção, isso viria da API com base no usuário autenticado
-  let meusItens = equipamentosData.filter(item => 
+  let meusItens = produtos.filter((item: Equipamento) => 
     item.proprietario === "Kauan Cássia" || item.id <= 3 // Mock: primeiros 3 itens são do usuário
   );
 
@@ -111,22 +114,30 @@ export function MyItens() {
         onLimparFiltros={handleLimparFiltros}
       />
 
-      <div className="cards">
-        {meusItens.map((item) => (
-          <EquipamentoCard key={item.id} equipamento={item} />
-        ))}
-      </div>
-
-      {meusItens.length === 0 && (
-        <div className="no-results">
-          <p>Nenhum equipamento encontrado com os filtros selecionados.</p>
-          <button 
-            onClick={handleLimparFiltros}
-            className="btn-limpar-filtros"
-          >
-            Limpar Filtros
-          </button>
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem' }}>
+          <p>Carregando itens...</p>
         </div>
+      ) : (
+        <>
+          <div className="cards">
+            {meusItens.map((item: Equipamento) => (
+              <EquipamentoCard key={item.id} equipamento={item} showAlugarButton={false} />
+            ))}
+          </div>
+
+          {meusItens.length === 0 && (
+            <div className="no-results">
+              <p>Nenhum equipamento encontrado com os filtros selecionados.</p>
+              <button 
+                onClick={handleLimparFiltros}
+                className="btn-limpar-filtros"
+              >
+                Limpar Filtros
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

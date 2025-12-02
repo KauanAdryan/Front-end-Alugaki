@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Navbar } from "../components/Navbar";
 import { Filtros } from "../components/filterBar";
 import { EquipamentoCard } from "../components/equipamentosCard";
-import { equipamentosData, type Equipamento } from "../mocks/equipamentosData";
+import { useProdutos } from "../hooks/useProducts";
+import { type Equipamento } from "../mocks/equipamentosData";
 
 interface FiltrosState {
   pesquisa: string;
@@ -13,6 +14,7 @@ interface FiltrosState {
 }
 
 export function Homepage() {
+  const { produtos, loading } = useProdutos();
   const [filtros, setFiltros] = useState<FiltrosState>({
     pesquisa: "",
     categorias: [],
@@ -21,7 +23,7 @@ export function Homepage() {
     apenasDisponiveis: false
   });
 
-  const equipamentosFiltrados = equipamentosData.filter((equipamento: Equipamento) => {
+  const equipamentosFiltrados = produtos.filter((equipamento: Equipamento) => {
     // Filtro por pesquisa (nome)
     if (filtros.pesquisa && !equipamento.nome.toLowerCase().includes(filtros.pesquisa.toLowerCase())) {
       return false;
@@ -104,25 +106,33 @@ export function Homepage() {
         onLimparFiltros={handleLimparFiltros}
       />
 
-      <div className="cards">
-        {equipamentosFiltrados.map((equipamento: Equipamento) => (
-          <EquipamentoCard 
-            key={equipamento.id} 
-            equipamento={equipamento} 
-          />
-        ))}
-      </div>
-
-      {equipamentosFiltrados.length === 0 && (
-        <div className="no-results">
-          <p>Nenhum equipamento encontrado com os filtros selecionados.</p>
-          <button 
-            onClick={handleLimparFiltros}
-            className="btn-limpar-filtros"
-          >
-            Limpar Filtros
-          </button>
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem' }}>
+          <p>Carregando equipamentos...</p>
         </div>
+      ) : (
+        <>
+          <div className="cards">
+            {equipamentosFiltrados.map((equipamento: Equipamento) => (
+              <EquipamentoCard 
+                key={equipamento.id} 
+                equipamento={equipamento} 
+              />
+            ))}
+          </div>
+
+          {equipamentosFiltrados.length === 0 && (
+            <div className="no-results">
+              <p>Nenhum equipamento encontrado com os filtros selecionados.</p>
+              <button 
+                onClick={handleLimparFiltros}
+                className="btn-limpar-filtros"
+              >
+                Limpar Filtros
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

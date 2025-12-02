@@ -3,9 +3,10 @@ import { type Equipamento } from "../mocks/equipamentosData";
 
 interface EquipamentoCardProps {
   equipamento: Equipamento;
+  showAlugarButton?: boolean;
 }
 
-export function EquipamentoCard({ equipamento }: EquipamentoCardProps) {
+export function EquipamentoCard({ equipamento, showAlugarButton = true }: EquipamentoCardProps) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
@@ -45,18 +46,20 @@ export function EquipamentoCard({ equipamento }: EquipamentoCardProps) {
           <small>{equipamento.local}</small>
         </div>
         
-        <button 
-          className={`btn-alugar ${!equipamento.disponivel ? 'btn-disabled' : ''}`}
-          disabled={!equipamento.disponivel}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (equipamento.disponivel) {
-              handleCardClick();
-            }
-          }}
-        >
-          {equipamento.disponivel ? 'Alugar Agora' : 'Indisponível'}
-        </button>
+        {showAlugarButton && (
+          <button 
+            className={`btn-alugar ${!equipamento.disponivel ? 'btn-disabled' : ''}`}
+            disabled={!equipamento.disponivel}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (equipamento.disponivel) {
+                handleCardClick();
+              }
+            }}
+          >
+            {equipamento.disponivel ? 'Alugar Agora' : 'Indisponível'}
+          </button>
+        )}
       </div>
     </div>
   );
