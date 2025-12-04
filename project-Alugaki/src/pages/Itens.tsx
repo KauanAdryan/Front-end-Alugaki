@@ -4,9 +4,9 @@ import { Filtros } from "../components/filterBar";
 import { EquipamentoCard } from "../components/equipamentosCard";
 // @ts-ignore - hook em JS sem tipos
 import { useProdutos } from "../hooks/useProducts";
-import { produtoService } from "../services/api";
 import { type Equipamento } from "../mocks/equipamentosData";
 import { MapPin, Star, User } from "lucide-react";
+import { getUsuarioSalvo } from "../utils/userStorage";
 
 const mapearCategoria = (categoria: string): string => {
   const mapeamento: { [key: string]: string } = {
@@ -19,15 +19,7 @@ const mapearCategoria = (categoria: string): string => {
   return mapeamento[categoria] || "Acessorios";
 };
 
-const obterUsuarioLogado = () => {
-  try {
-    const salvo = localStorage.getItem("usuario");
-    return salvo ? JSON.parse(salvo) : null;
-  } catch (error) {
-    console.error("Nao foi possivel ler o usuario logado:", error);
-    return null;
-  }
-};
+const obterUsuarioLogado = () => getUsuarioSalvo();
 
 interface FiltrosState {
   pesquisa: string;
@@ -43,7 +35,6 @@ export function MyItens() {
   const usuarioIdLogado = usuarioLogado?.id ?? usuarioLogado?.idUsuario ?? usuarioLogado?.usuarioId;
   const usuarioNomeLogado = usuarioLogado?.nome ? usuarioLogado.nome.toLowerCase() : "";
   const [equipamentoSelecionado, setEquipamentoSelecionado] = useState<Equipamento | null>(null);
-  const [inativandoId, setInativandoId] = useState<number | null>(null);
   const [filtros, setFiltros] = useState<FiltrosState>({
     pesquisa: "",
     categorias: [],

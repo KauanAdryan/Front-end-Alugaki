@@ -535,6 +535,39 @@ body {
   font-weight: 600;
 }
 
+.produto-modal-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dias-select {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 220px;
+}
+
+.produto-modal-msg {
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.produto-modal-msg.erro {
+  background: #ffe6e6;
+  color: #b42318;
+  border: 1px solid #f5c2c0;
+}
+
+.produto-modal-msg.sucesso {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #c9e7cb;
+}
+
 .produto-modal-acao {
   display: flex;
   flex-wrap: wrap;

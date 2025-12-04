@@ -1,10 +1,10 @@
 const STORAGE_KEY = "notificacoesExtra";
+import { getUsuarioSalvo } from "../utils/userStorage";
 
 const getUsuarioIdLocal = () => {
   try {
-    const raw = localStorage.getItem("usuario");
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
+    const parsed = getUsuarioSalvo();
+    if (!parsed) return null;
     const id =
       parsed.id ??
       parsed.idUsuario ??
@@ -32,6 +32,11 @@ const loadExtras = () => {
 const saveExtras = (list) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    try {
+      window.dispatchEvent(new CustomEvent("notificacoes:changed"));
+    } catch (_) {
+      // ignore
+    }
   } catch (error) {
     console.warn("Nao foi possivel salvar notificacoes extras", error);
   }

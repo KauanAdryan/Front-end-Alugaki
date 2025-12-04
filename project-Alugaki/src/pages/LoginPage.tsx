@@ -26,6 +26,7 @@ export function LoginPage() {
       const usuarioEncontrado = await authService.login(email, senha);
 
       // salva usuario logado
+      sessionStorage.setItem("usuario", JSON.stringify(usuarioEncontrado));
       localStorage.setItem("usuario", JSON.stringify(usuarioEncontrado));
 
       navigate("/");

@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
 import { notificationService } from "../services/notificationService";
+import { getUsuarioSalvo, limparUsuario } from "../utils/userStorage";
 
 export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -11,22 +12,28 @@ export function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // Contar notificações não lidas
+  // Contar notificações não lidas e reagir a mudanças
   useEffect(() => {
-  const usuarioId = notificationService.getUsuarioIdLocal();
-  const naoLidas = notificationService.countUnread(usuarioId);
-    setNotificacoesNaoLidas(naoLidas);
+    const usuarioId = notificationService.getUsuarioIdLocal();
+    const updateCount = () => {
+      const naoLidas = notificationService.countUnread(usuarioId);
+      setNotificacoesNaoLidas(naoLidas);
+    };
+    updateCount();
+    const handler = () => updateCount();
+    window.addEventListener("storage", handler);
+    window.addEventListener("notificacoes:changed", handler);
+    return () => {
+      window.removeEventListener("storage", handler);
+      window.removeEventListener("notificacoes:changed", handler);
+    };
   }, []);
 
-  // Buscar usuário logado do localStorage
+  // Buscar usuário logado do storage
   useEffect(() => {
-    const usuario = localStorage.getItem("usuario");
+    const usuario = getUsuarioSalvo();
     if (usuario) {
-      try {
-        setUsuarioLogado(JSON.parse(usuario));
-      } catch (error) {
-        console.error("Erro ao parsear usuário:", error);
-      }
+      setUsuarioLogado(usuario);
     }
   }, []);
 
@@ -55,7 +62,7 @@ export function Navbar() {
   }, [dropdownOpen]);
 
   const handleLogout = () => {
-    localStorage.removeItem("usuario");
+    limparUsuario();
     navigate("/login");
   };
 
@@ -117,6 +124,15 @@ export function Navbar() {
               Itens Alugados
             </button>
           </li>
+          <li>
+            <button
+              type="button"
+              className="nav-link-btn"
+              onClick={() => handleNavLinkClick("/dashboard")}
+            >
+              Dashboard
+            </button>
+          </li>
         </ul>
       </div>
 
@@ -137,9 +153,9 @@ export function Navbar() {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             style={{ cursor: "pointer" }}
           >
-            {usuarioLogado?.avatar ? (
+            {usuarioLogado?.avatar || usuarioLogado?.foto ? (
               <img 
-                src={usuarioLogado.avatar} 
+                src={usuarioLogado.avatar || usuarioLogado.foto} 
                 alt={usuarioLogado.nome || "Perfil"} 
                 className="avatar-image"
               />
@@ -170,4 +186,3 @@ export function Navbar() {
     </nav>
   );
 }
-

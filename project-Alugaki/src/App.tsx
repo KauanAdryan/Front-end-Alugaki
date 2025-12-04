@@ -18,6 +18,8 @@ import { EsqueceuSenha } from "./pages/esqueceuSenha.tsx"
 import './styles/esqueceuSenha.css'
 import { DetalhesEquipamento } from "./pages/DetalhesEquipamento.tsx"
 import './styles/DetalhesEquipamento.css'
+import { Dashboard } from "./pages/Dashboard.tsx"
+import './styles/Dashboard.css'
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx"
 
 function App() {
@@ -55,6 +57,11 @@ function App() {
         <Route path= "/equipamento/:id" element={
           <ProtectedRoute>
             <DetalhesEquipamento />
+          </ProtectedRoute>
+        } />
+        <Route path= "/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
           </ProtectedRoute>
         } />
       </Routes>

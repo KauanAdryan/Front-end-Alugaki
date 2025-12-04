@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
+import { Camera } from "lucide-react";
 
 export function CadastroPage() {
 
@@ -19,6 +20,8 @@ export function CadastroPage() {
         confirmarSenha: ""
     });
 
+    const [fotoNome, setFotoNome] = useState<string>("");
+    const [fotoPreview, setFotoPreview] = useState<string>("");
     const [erro, setErro] = useState("");
     const [sucesso, setSucesso] = useState("");
     const navigate = useNavigate();
@@ -60,6 +63,21 @@ export function CadastroPage() {
     function mascaraCEP(valor: string): string {
         const apenasNumeros = valor.replace(/\D/g, '');
         return apenasNumeros.replace(/(\d{5})(\d{1,3})$/, '$1-$2');
+    }
+
+    function handleFotoChange(e: ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) {
+            setFotoNome("");
+            setFotoPreview("");
+            return;
+        }
+        setFotoNome(file.name);
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            setFotoPreview(ev.target?.result as string);
+        };
+        reader.readAsDataURL(file);
     }
 
     function handleChange(e: any) {
@@ -173,6 +191,26 @@ export function CadastroPage() {
                 <div className="welcome">
                     <h2>Criar nova conta</h2>
                     <p>Preencha os dados abaixo para se cadastrar</p>
+                </div>
+
+                <div className="photo-upload">
+                    <label htmlFor="foto" className="photo-upload-label">
+                        {fotoPreview ? (
+                            <img src={fotoPreview} alt="Pré-visualização" />
+                        ) : (
+                            <div className="photo-upload-placeholder">
+                                <Camera size={28} />
+                                <span>Adicionar foto</span>
+                            </div>
+                        )}
+                        <input
+                            type="file"
+                            id="foto"
+                            accept="image/*"
+                            onChange={handleFotoChange}
+                        />
+                    </label>
+                    {fotoNome && <small className="photo-upload-name">{fotoNome}</small>}
                 </div>
 
                 <form onSubmit={handleSubmit}>

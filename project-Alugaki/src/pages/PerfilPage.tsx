@@ -142,8 +142,8 @@ export function PerfilPage() {
         {/* Profile Header */}
         <div className="perfil-header-section">
           <div className="perfil-avatar-large">
-            {usuario.avatar ? (
-              <img src={usuario.avatar} alt={usuario.nome} />
+            {usuario.avatar || (usuario as any).foto ? (
+              <img src={usuario.avatar || (usuario as any).foto} alt={usuario.nome} />
             ) : (
               <div className="avatar-placeholder">
                 {usuario.nome ? usuario.nome.charAt(0).toUpperCase() : "👤"}

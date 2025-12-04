@@ -65,6 +65,7 @@ const normalizarUsuario = (usuario) => {
     telefone: usuario.telefone || contatoObj.telefone || contatoStr,
     cpf: usuario.cpf || usuario.cpfCnpj,
     cpfCnpj: usuario.cpfCnpj || usuario.cpf,
+    avatar: usuario.avatar || usuario.foto,
     rua: usuario.rua || enderecoObj.rua,
     numero: usuario.numero || enderecoObj.numero,
     bairro: usuario.bairro || enderecoObj.bairro,
@@ -182,15 +183,21 @@ export const authService = {
       const { senha: _, ...usuarioSemSenha } = novoUsuario;
       return usuarioSemSenha;
     }
-    
     try {
       const payload = montarPayloadUsuario(usuarioData);
       console.debug('cadastro payload', payload);
       const response = await httpClient.post(BFF_CONFIG.ENDPOINTS.USUARIO, payload);
       return normalizarUsuario(response.data);
     } catch (error) {
-      console.error('Erro ao cadastrar usuário:', error);
-      throw error;
+      console.error('Erro ao cadastrar usuario:', error);
+      const msg =
+        (error?.response?.data && (error.response.data.message || error.response.data.error)) ||
+        error?.message;
+      const lower = (msg || '').toLowerCase();
+      if (lower.includes('cpf') && lower.includes('duplicate')) {
+        throw new Error('CPF/CNPJ ja cadastrado. Use outro documento ou faca login.');
+      }
+      throw new Error(msg || 'Erro ao cadastrar usuario.');
     }
   },
 

@@ -8,6 +8,7 @@ import { type Equipamento } from "../mocks/equipamentosData";
 import { aluguelService } from "../services/rentalService";
 import { notificationService } from "../services/notificationService";
 import { MapPin, Star, User } from "lucide-react";
+import { getUsuarioSalvo } from "../utils/userStorage";
 
 const mapearCategoria = (categoria: string): string => {
   const mapeamento: { [key: string]: string } = {
@@ -20,15 +21,7 @@ const mapearCategoria = (categoria: string): string => {
   return mapeamento[categoria] || "Acessorios";
 };
 
-const obterUsuarioLogado = () => {
-  try {
-    const salvo = localStorage.getItem("usuario");
-    return salvo ? JSON.parse(salvo) : null;
-  } catch (error) {
-    console.error("Nao foi possivel ler o usuario logado:", error);
-    return null;
-  }
-};
+const obterUsuarioLogado = () => getUsuarioSalvo();
 
 interface FiltrosState {
   pesquisa: string;
@@ -112,30 +105,6 @@ export function ItensLocados() {
     fetchAlugueis();
   }, [usuarioIdLogado]);
 
-  const pertenceAoUsuario = (item: Equipamento) => {
-    const donoId =
-      (item as any).usuarioId ??
-      (item as any).usuario_id_usuario ??
-      (item as any).usuarioIdUsuario ??
-      (item as any).idUsuario;
-    const donoNome = (
-      (item as any).proprietario ||
-      (item as any).usuarioNome ||
-      (item as any).nomeUsuario ||
-      ""
-    ).toLowerCase();
-
-    if (usuarioIdLogado != null && donoId != null) {
-      return Number(donoId) === Number(usuarioIdLogado);
-    }
-
-    if (usuarioNomeLogado && donoNome) {
-      return donoNome === usuarioNomeLogado;
-    }
-
-    return false;
-  };
-
   // Filtra itens alugados pelo usuario (locatario), baseado nos ids de aluguel status 3
   let itensLocados = produtos.filter((equipamento: Equipamento) => {
     if (!produtosAlugadosIds.length) return false;
@@ -196,7 +165,7 @@ export function ItensLocados() {
     });
   };
 
-  const handleSolicitarDevolucao = (equipamento: Equipamento) => {
+  const handleSolicitarDevolucao = async (equipamento: Equipamento) => {
     const prodId = Number((equipamento as any).id ?? (equipamento as any).idProduto ?? (equipamento as any).produtoId ?? (equipamento as any).idproduto);
     const aluguelId = aluguelPorProduto[prodId];
     const donoId =
@@ -204,20 +173,23 @@ export function ItensLocados() {
       (equipamento as any).usuario_id_usuario ??
       (equipamento as any).usuarioIdUsuario ??
       (equipamento as any).idUsuario;
+
     if (!aluguelId || !donoId) {
-      alert("Não foi possível identificar o aluguel ou o dono do item para solicitar devolução.");
+      alert("Nao foi possivel identificar o aluguel ou o dono do item para solicitar devolucao.");
       return;
     }
+    // Envia solicitacao de devolucao ao dono; delecao/confirmacao acontece depois
     notificationService.add({
-      title: "Devolução solicitada",
-      content: `O item "${equipamento.nome}" foi devolvido e aguarda confirmação do dono.`,
+      title: "Devolucao solicitada",
+      content: `O item "${equipamento.nome}" foi devolvido e aguarda confirmacao do dono.`,
       category: "Devolucao",
       recipientId: Number(donoId),
       aluguelId: Number(aluguelId),
       produtoId: prodId,
     });
-    setToastMessage("Devolução enviada ao dono para confirmação.");
+    setToastMessage("Devolucao enviada ao dono para confirmacao.");
     setTimeout(() => setToastMessage(""), 2500);
+    setEquipamentoSelecionado(null);
   };
 
   const handleOpenDetalhes = (equipamento: Equipamento) => {
@@ -253,22 +225,6 @@ export function ItensLocados() {
             {itensLocados.map((item: Equipamento) => (
               <div key={item.id} style={{ width: "220px" }}>
                 <EquipamentoCard equipamento={item} showAlugarButton={false} onOpenDetails={handleOpenDetalhes} />
-                <button
-                  style={{
-                    marginTop: "8px",
-                    width: "100%",
-                    padding: "8px",
-                    borderRadius: "6px",
-                    border: "none",
-                    backgroundColor: "#007bff",
-                    color: "white",
-                    cursor: "pointer",
-                    fontWeight: 600
-                  }}
-                  onClick={() => handleSolicitarDevolucao(item)}
-                >
-                  Devolver item
-                </button>
               </div>
             ))}
           </div>

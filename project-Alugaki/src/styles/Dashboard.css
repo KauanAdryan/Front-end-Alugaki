@@ -1,0 +1,146 @@
+.dashboard-page {
+  background: #fff8e7;
+  min-height: 100vh;
+}
+
+.dashboard-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.dashboard-header p {
+  margin: 0;
+  color: #555;
+}
+
+.dashboard-loader {
+  text-align: center;
+  padding: 40px 0;
+  color: #555;
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.dashboard-card {
+  background: #fff;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dashboard-card .card-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.dashboard-card .card-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.dashboard-donut {
+  margin-top: 28px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.donut-chart {
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.donut-center {
+  width: 180px;
+  height: 180px;
+  background: #fff8e7;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: inset 0 0 0 1px #eee;
+}
+
+.donut-center strong {
+  font-size: 30px;
+}
+
+.donut-center span {
+  font-size: 14px;
+  color: #666;
+}
+
+.donut-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  flex: 1;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #e7e7e7;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.donut-legend-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badge-pill {
+  border-radius: 12px;
+  background: #fff;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 3px #f8f8f8 inset;
+}
+
+.legend-item span {
+  flex: 1;
+  color: #444;
+}
+
+.legend-item strong {
+  font-size: 16px;
+}

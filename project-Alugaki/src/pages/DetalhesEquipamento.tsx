@@ -6,6 +6,7 @@ import { Star, MapPin, User } from "lucide-react";
 import { useProdutos } from "../hooks/useProducts";
 import { notificationService } from "../services/notificationService";
 import { aluguelService } from "../services/rentalService";
+import { getUsuarioSalvo } from "../utils/userStorage";
 
 const obterCategoriaLabel = (equipamento: any) => {
   const descricao =
@@ -65,9 +66,8 @@ const obterCategoriaLabel = (equipamento: any) => {
 
 const obterUsuarioId = () => {
   try {
-    const salvo = localStorage.getItem("usuario");
-    if (!salvo) return null;
-    const parsed = JSON.parse(salvo);
+    const parsed = getUsuarioSalvo();
+    if (!parsed) return null;
     return (
       parsed.id ??
       parsed.usuarioId ??

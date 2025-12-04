@@ -6,11 +6,12 @@ import { BFF_CONFIG } from '../config/bff.config';
 
 const delay = (ms = 400) => new Promise(resolve => setTimeout(resolve, ms));
 
+import { getUsuarioSalvo } from '../utils/userStorage';
+
 const getUsuarioIdLocal = () => {
   try {
-    const salvo = localStorage.getItem('usuario');
-    if (!salvo) return null;
-    const parsed = JSON.parse(salvo);
+    const parsed = getUsuarioSalvo();
+    if (!parsed) return null;
     const id =
       parsed.id ??
       parsed.usuarioId ??
@@ -19,7 +20,7 @@ const getUsuarioIdLocal = () => {
       null;
     return id != null ? Number(id) : null;
   } catch (error) {
-    console.warn('Nao foi possivel ler usuario do localStorage', error);
+    console.warn('Nao foi possivel ler usuario salvo', error);
     return null;
   }
 };
@@ -97,6 +98,16 @@ export const aluguelService = {
     const endpoint = `${BFF_CONFIG.ENDPOINTS.ALUGUEL}/status/${statusId}`;
     const response = await httpClient.get(endpoint);
     return Array.isArray(response?.data) ? response.data : [];
+  },
+
+  async getAluguelById(aluguelId) {
+    if (USE_MOCK_DATA) {
+      await delay();
+      return null;
+    }
+    const endpoint = `${BFF_CONFIG.ENDPOINTS.ALUGUEL}/${aluguelId}`;
+    const response = await httpClient.get(endpoint);
+    return response.data;
   },
 
   async criarAluguel(produtoId, payload = {}) {
@@ -221,6 +232,16 @@ export const aluguelService = {
       }
       throw error;
     }
+  },
+
+  async cancelarAluguel(aluguelId) {
+    if (USE_MOCK_DATA) {
+      await delay();
+      return { id: aluguelId, status: 'cancelado' };
+    }
+    const endpoint = `${BFF_CONFIG.ENDPOINTS.ALUGUEL}/${aluguelId}`;
+    const response = await httpClient.delete(endpoint);
+    return response.data;
   },
 
   async atualizarStatus(aluguelId, statusId) {

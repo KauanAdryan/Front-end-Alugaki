@@ -290,5 +290,13 @@ export function useProdutos(options = {}) {
     fetchProdutos,
     criarProduto,
     atualizarProdutoLocal,
+    // utilitarios para dash
+    getResumoStatus: () => {
+      const total = produtos.length;
+      const alugados = produtos.filter((p) => Number(p.statusAluguelIdStatus) === 3).length;
+      const reservados = produtos.filter((p) => Number(p.statusAluguelIdStatus) === 2).length;
+      const disponiveis = produtos.filter((p) => !p.statusAluguelIdStatus && p.disponivel !== false).length;
+      return { total, alugados, reservados, disponiveis };
+    },
   };
 }
