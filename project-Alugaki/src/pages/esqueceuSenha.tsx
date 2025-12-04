@@ -10,15 +10,13 @@ export function EsqueceuSenha() {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
-  const [etapa, setEtapa] = useState(1); // 1: validação, 2: nova senha
+  const [etapa, setEtapa] = useState(1); // 1: validacao, 2: nova senha
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Função de máscara para CPF
   function mascaraCPF(valor: string): string {
     const apenasNumeros = valor.replace(/\D/g, '');
     if (apenasNumeros.length <= 11) {
-      // CPF: 000.000.000-00
       return apenasNumeros
         .replace(/(\d{3})(\d)/, '$1.$2')
         .replace(/(\d{3})(\d)/, '$1.$2')
@@ -39,16 +37,17 @@ export function EsqueceuSenha() {
     setLoading(true);
 
     try {
-      // Remove máscara do CPF antes de validar
       const cpfLimpo = cpf.replace(/\D/g, '');
       await authService.validarUsuario(cpfLimpo, email);
-
-      // Avança para a etapa de nova senha
       setEtapa(2);
       setSucesso("Usuário validado com sucesso! Agora defina sua nova senha.");
-
     } catch (err: any) {
-      setErro(err.message || "Erro ao validar usuário. Tente novamente mais tarde.");
+      const msg = err?.response?.data?.message || err?.message || "";
+      if (msg.toLowerCase().includes("cpf") || msg.toLowerCase().includes("email")) {
+        setErro("Email ou CPF/CNPJ não encontrados ou não correspondem ao mesmo usuário.");
+      } else {
+        setErro("Erro ao validar usuário. Tente novamente mais tarde.");
+      }
     } finally {
       setLoading(false);
     }
@@ -60,7 +59,6 @@ export function EsqueceuSenha() {
     setSucesso("");
     setLoading(true);
 
-    // Validações
     if (novaSenha.length < 6) {
       setErro("A senha deve ter pelo menos 6 caracteres");
       setLoading(false);
@@ -74,7 +72,6 @@ export function EsqueceuSenha() {
     }
 
     try {
-      // Remove máscara do CPF antes de atualizar
       const cpfLimpo = cpf.replace(/\D/g, '');
       await authService.atualizarSenha(cpfLimpo, email, novaSenha);
 
@@ -82,9 +79,13 @@ export function EsqueceuSenha() {
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-
     } catch (err: any) {
-      setErro(err.message || "Erro ao redefinir senha. Tente novamente mais tarde.");
+      const msg = err?.response?.data?.message || err?.message || "";
+      if (msg.toLowerCase().includes("cpf") || msg.toLowerCase().includes("email")) {
+        setErro("Email ou CPF/CNPJ não encontrados ou não correspondem ao mesmo usuário.");
+      } else {
+        setErro("Erro ao redefinir senha. Tente novamente mais tarde.");
+      }
     } finally {
       setLoading(false);
     }
@@ -102,7 +103,6 @@ export function EsqueceuSenha() {
     }
   }
 
-  // Função para calcular força da senha
   function getSenhaStrength(senha: string) {
     if (senha.length === 0) return "";
     if (senha.length < 6) return "fraca";
@@ -131,7 +131,6 @@ export function EsqueceuSenha() {
           </p>
         </div>
 
-        {/* Indicador de etapas */}
         <div className="etapa-indicator">
           <div className="etapa-step">
             <div className={`etapa-circle ${etapa >= 1 ? 'active' : ''} ${etapa > 1 ? 'completed' : ''}`}>
@@ -255,9 +254,9 @@ export function EsqueceuSenha() {
               {confirmarSenha && (
                 <div className="senha-match-indicator">
                   {novaSenha === confirmarSenha ? (
-                    <span className="match-success">✓ Senhas coincidem</span>
+                    <span className="match-success">✔ Senhas coincidem</span>
                   ) : (
-                    <span className="match-error">✗ Senhas não coincidem</span>
+                    <span className="match-error">✖ Senhas não coincidem</span>
                   )}
                 </div>
               )}

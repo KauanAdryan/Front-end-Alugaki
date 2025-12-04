@@ -3,6 +3,41 @@ import { useState, useEffect } from "react";
 import { useProdutos } from "../hooks/useProducts";
 import { X } from "lucide-react";
 
+const CATEGORIAS = [
+  { id: 1, label: "Eletronico" },
+  { id: 2, label: "Cordas" },
+  { id: 3, label: "Cordas Friccionadas" },
+  { id: 4, label: "Cordas Dedilhadas" },
+  { id: 5, label: "Cordas Percussão" },
+  { id: 6, label: "Sopro" },
+  { id: 7, label: "Madeiras" },
+  { id: 8, label: "Metais" },
+  { id: 9, label: "Percussão" },
+  { id: 10, label: "Percussão de Pele" },
+  { id: 11, label: "Percussão Metálica" },
+  { id: 12, label: "Teclas" },
+  { id: 13, label: "Eletrônicos" },
+  { id: 14, label: "Sintetizadores" },
+  { id: 15, label: "Acessórios" },
+  { id: 16, label: "Áudio Profissional" },
+  { id: 17, label: "Bateria e Componentes" },
+  { id: 18, label: "Violões" },
+  { id: 19, label: "Guitarras" },
+  { id: 20, label: "Baixos" },
+  { id: 21, label: "Pianos" },
+  { id: 22, label: "Teclados" },
+  { id: 23, label: "Ukuleles" },
+  { id: 24, label: "Instrumentos Regionais" },
+  { id: 25, label: "Instrumentos Orquestrais" },
+  { id: 27, label: "Outros" },
+];
+
+const CONDICOES = [
+  { id: 1, label: "Novo" },
+  { id: 2, label: "Usado" },
+  { id: 3, label: "Semi-novo" },
+];
+
 interface FiltrosProps {
   filtros: {
     pesquisa: string;
@@ -16,7 +51,7 @@ interface FiltrosProps {
 }
 
 export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosProps){
-    const { fetchProdutos, criarProduto } = useProdutos();
+    const { fetchProdutos, criarProduto } = useProdutos({ autoFetch: false });
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [pesquisaLocal, setPesquisaLocal] = useState(filtros.pesquisa);
@@ -32,6 +67,9 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
         preco: "",
         local: "",
         categoria: "",
+        categoriaIdCategoria: "",
+        condicao: "",
+        condicaoIdCondicao: "",
         imagem: null as File | null,
         imagemPreview: ""
     });
@@ -124,6 +162,9 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
                 preco: "",
                 local: "",
                 categoria: "",
+                categoriaIdCategoria: "",
+                condicao: "",
+                condicaoIdCondicao: "",
                 imagem: null,
                 imagemPreview: ""
             });
@@ -162,8 +203,13 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
             setLoadingCadastro(false);
             return;
         }
-        if (!formData.categoria) {
+        if (!formData.categoriaIdCategoria) {
             setErro("Categoria é obrigatória");
+            setLoadingCadastro(false);
+            return;
+        }
+        if (!formData.condicaoIdCondicao) {
+            setErro("Condição é obrigatória");
             setLoadingCadastro(false);
             return;
         }
@@ -188,6 +234,9 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
                 preco: parseFloat(formData.preco),
                 local: formData.local.trim(),
                 categoria: formData.categoria,
+                categoriaIdCategoria: formData.categoriaIdCategoria,
+                condicao: formData.condicao,
+                condicaoIdCondicao: formData.condicaoIdCondicao,
                 imagem: imagemUrl,
                 disponivel: true,
                 avaliacao: 0
@@ -480,18 +529,47 @@ export function Filtros({ filtros, onFiltrosChange, onLimparFiltros }: FiltrosPr
                     <label htmlFor="modal-categoria" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Categoria *</label>
                     <select
                         id="modal-categoria"
-                        value={formData.categoria}
-                        onChange={(e) => setFormData(prev => ({ ...prev, categoria: e.target.value }))}
+                        value={formData.categoriaIdCategoria}
+                        onChange={(e) => {
+                          const selectedId = e.target.value;
+                          const selected = CATEGORIAS.find(c => String(c.id) === selectedId);
+                          setFormData(prev => ({
+                            ...prev,
+                            categoriaIdCategoria: selectedId,
+                            categoria: selected?.label || ""
+                          }));
+                        }}
                         required
                         style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
                     >
                         <option value="">Selecione a categoria</option>
-                        <option value="cordas">Cordas</option>
-                        <option value="teclas">Teclas</option>
-                        <option value="percussao">Percussão</option>
-                        <option value="amplificadores">Amplificadores</option>
-                        <option value="som">Sistemas de PA</option>
-                        <option value="acessorios">Acessórios</option>
+                        {CATEGORIAS.map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.label}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="modal-condicao" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Condição *</label>
+                    <select
+                        id="modal-condicao"
+                        value={formData.condicaoIdCondicao}
+                        onChange={(e) => {
+                          const selectedId = e.target.value;
+                          const selected = CONDICOES.find(c => String(c.id) === selectedId);
+                          setFormData(prev => ({
+                            ...prev,
+                            condicaoIdCondicao: selectedId,
+                            condicao: selected?.label || ""
+                          }));
+                        }}
+                        required
+                        style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
+                    >
+                        <option value="">Selecione a condição</option>
+                        {CONDICOES.map(cond => (
+                          <option key={cond.id} value={cond.id}>{cond.label}</option>
+                        ))}
                     </select>
                 </div>
 

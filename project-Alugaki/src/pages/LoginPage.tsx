@@ -31,63 +31,71 @@ export function LoginPage() {
       navigate("/");
 
     } catch (err: any) {
-      setErro(err.message || "Erro ao fazer login");
+      const msgBackend = err?.response?.data?.message || err?.message || "";
+      const msgLower = msgBackend.toLowerCase();
+      if (msgLower.includes("senha") || msgLower.includes("incorreto") || msgLower.includes("unauthorized") || msgLower.includes("credenciais")) {
+        setErro("Email ou senha incorretos");
+      } else {
+        setErro("Não foi possível fazer login. Verifique seus dados.");
+      }
     }
   }
 
   return (
     <>
-      <div className="login-container2">
+      <div className="logo-container">
         <h1>AlugaKi</h1>
       </div>
 
-      <div className="login-container">
-        <div className="welcome">
-          <h2>Bem-vindo de volta!</h2>
-          <p>Faça login na sua conta</p>
+      <div className="login-wrapper">
+        <div className="login-container">
+          <div className="welcome">
+            <h2>Bem-vindo de volta!</h2>
+            <p>Faça login na sua conta</p>
+          </div>
+
+          <form onSubmit={handleLogin}>
+            <div>
+              <label htmlFor="email">Email</label>
+              <input 
+                type="email"
+                id="email"
+                className="input-field"
+                placeholder="email@email.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password">Senha</label>
+              <input
+                type="password"
+                id="password"
+                className="input-field"
+                placeholder="••••••••"
+                required
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+              />
+            </div>
+
+            {erro && <p style={{ color: "red" }}>{erro}</p>}
+
+            <div className="divider"></div>
+
+            <div className="forgot-password">
+              <a href="esqueceu-senha">Esqueceu sua senha?</a>
+            </div>
+
+            <button type="submit" className="btn btn-primary">Entrar</button>
+
+            <div className="register-link">
+              <p>Não tem uma conta? <a href="cadastro">Cadastre-se</a></p>
+            </div>
+          </form>
         </div>
-
-        <form onSubmit={handleLogin}>
-          <div>
-            <label htmlFor="email">Email</label>
-            <input 
-              type="email"
-              id="email"
-              className="input-field"
-              placeholder="email@email.com"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password">Senha</label>
-            <input
-              type="password"
-              id="password"
-              className="input-field"
-              placeholder="••••••••"
-              required
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
-          </div>
-
-          {erro && <p style={{ color: "red" }}>{erro}</p>}
-
-          <div className="divider"></div>
-
-          <div className="forgot-password">
-            <a href="esqueceu-senha">Esqueceu sua senha?</a>
-          </div>
-
-          <button type="submit" className="btn btn-primary">Entrar</button>
-
-          <div className="register-link">
-            <p>Não tem uma conta? <a href="cadastro">Cadastre-se</a></p>
-          </div>
-        </form>
       </div>
     </>
   );

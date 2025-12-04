@@ -11,21 +11,24 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 /* ===== Cabeçalho ===== */
 .explore-header {
   text-align: center;
   margin: 3rem 1rem 2rem 1rem;
+  width: 100%;
+  max-width: 1200px;
 }
 
 .explore-header > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 1.25rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -60,13 +63,12 @@ body {
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  max-width: 1280px;
+  width: 100%;
+  max-width: 1200px;
   gap: 1.5rem;
   justify-items: center;
-  padding: 0 0 3rem 0;
+  padding: 0 1.25rem 3rem;
   margin: 0 auto;
-  margin-left: 106px;
-  width: 1280px;
   box-sizing: border-box;
 }
 
@@ -78,10 +80,9 @@ body {
 
 @media (max-width: 1500px) {
   .cards {
-    margin-left: auto;
     width: 100%;
     max-width: 1280px;
-    padding: 0 2rem 3rem 2rem;
+    padding: 0 1.5rem 3rem;
   }
 }
 
@@ -425,6 +426,155 @@ body {
 .btn-limpar-filtros:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal de detalhes do produto */
+.produto-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.produto-modal {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 960px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.22);
+  position: relative;
+}
+
+.produto-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.produto-modal-body {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.produto-modal-image {
+  position: relative;
+  background: #f5f5f5;
+  min-height: 360px;
+}
+
+.produto-modal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.produto-modal-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #000;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.produto-modal-info {
+  padding: 1.5rem 1.5rem 1.8rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.produto-modal-preco {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 1.25rem;
+}
+
+.produto-modal-preco strong {
+  font-size: 1.8rem;
+}
+
+.produto-modal-local {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.produto-modal-descricao {
+  line-height: 1.5;
+  color: #444;
+  margin: 0.25rem 0 0.5rem 0;
+}
+
+.produto-modal-owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  font-weight: 600;
+}
+
+.produto-modal-acao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.produto-modal-acao .btn-alugar {
+  flex: 1;
+  min-width: 180px;
+}
+
+.produto-modal-acao .btn-voltar {
+  min-width: 120px;
+}
+
+.btn-voltar {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-voltar:hover {
+  background: #ededed;
+  border-color: #ccc;
+}
+
+@media (max-width: 900px) {
+  .produto-modal-body {
+    grid-template-columns: 1fr;
+  }
+
+  .produto-modal-info {
+    padding: 1.25rem 1.25rem 1.5rem 1.25rem;
+  }
 }
 
 @media (max-width: 768px) {

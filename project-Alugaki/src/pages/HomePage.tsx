@@ -4,6 +4,7 @@ import { Filtros } from "../components/filterBar";
 import { EquipamentoCard } from "../components/equipamentosCard";
 import { useProdutos } from "../hooks/useProducts";
 import { type Equipamento } from "../mocks/equipamentosData";
+import { MapPin, Star, User } from "lucide-react";
 
 interface FiltrosState {
   pesquisa: string;
@@ -13,8 +14,33 @@ interface FiltrosState {
   apenasDisponiveis: boolean;
 }
 
+const obterUsuarioLogado = () => {
+  try {
+    const salvo = localStorage.getItem("usuario");
+    return salvo ? JSON.parse(salvo) : null;
+  } catch (error) {
+    console.warn("Nao foi possivel ler usuario logado", error);
+    return null;
+  }
+};
+
+const mapearCategoria = (categoria: string): string => {
+  const mapeamento: { [key: string]: string } = {
+    "cordas": "Instrumentos",
+    "teclas": "Instrumentos",
+    "percussao": "Instrumentos",
+    "amplificadores": "Amplificadores",
+    "som": "Sistemas de PA"
+  };
+  return mapeamento[categoria] || "Acessorios";
+};
+
 export function Homepage() {
   const { produtos, loading } = useProdutos();
+  const [equipamentoSelecionado, setEquipamentoSelecionado] = useState<Equipamento | null>(null);
+  const usuarioLogado = obterUsuarioLogado();
+  const usuarioIdLogado = usuarioLogado?.id ?? usuarioLogado?.idUsuario ?? usuarioLogado?.usuarioId;
+  const usuarioNomeLogado = usuarioLogado?.nome ? usuarioLogado.nome.toLowerCase() : "";
   const [filtros, setFiltros] = useState<FiltrosState>({
     pesquisa: "",
     categorias: [],
@@ -23,7 +49,43 @@ export function Homepage() {
     apenasDisponiveis: false
   });
 
-  const equipamentosFiltrados = produtos.filter((equipamento: Equipamento) => {
+  const naoPertenceAoUsuario = (equipamento: Equipamento) => {
+    const donoId =
+      (equipamento as any).usuarioId ??
+      (equipamento as any).usuario_id_usuario ??
+      (equipamento as any).usuarioIdUsuario ??
+      (equipamento as any).idUsuario;
+    const donoNome = (
+      (equipamento as any).proprietario ||
+      (equipamento as any).usuarioNome ||
+      (equipamento as any).nomeUsuario ||
+      ""
+    ).toLowerCase();
+
+    if (usuarioIdLogado != null && donoId != null) {
+      return Number(donoId) !== Number(usuarioIdLogado);
+    }
+
+    if (usuarioNomeLogado && donoNome) {
+      return donoNome !== usuarioNomeLogado;
+    }
+
+    // Sem usuario logado, mantemos tudo
+    return true;
+  };
+
+  const equipamentosFiltrados = produtos
+    .filter(naoPertenceAoUsuario)
+    .filter((equipamento: any) => {
+      // Se o BFF marcar status 2 (reservado) ou 3 (alugado), ocultamos da listagem
+      const statusIdRaw = equipamento.statusAluguelIdStatus ?? equipamento.status_aluguel_id_status;
+      const statusId = Number(statusIdRaw);
+      if (statusId === 2 || statusId === 3) {
+        return false;
+      }
+      return true;
+    })
+    .filter((equipamento: Equipamento) => {
     // Filtro por pesquisa (nome)
     if (filtros.pesquisa && !equipamento.nome.toLowerCase().includes(filtros.pesquisa.toLowerCase())) {
       return false;
@@ -42,7 +104,7 @@ export function Homepage() {
       return false;
     }
     
-    // Filtro por faixas de preço
+    // Filtro por faixas de preco
     if (filtros.faixasPreco.length > 0) {
       const precoNoIntervalo = filtros.faixasPreco.some(faixa => {
         switch(faixa) {
@@ -66,17 +128,6 @@ export function Homepage() {
     return true;
   });
 
-  const mapearCategoria = (categoria: string): string => {
-    const mapeamento: { [key: string]: string } = {
-      "cordas": "Instrumentos",
-      "teclas": "Instrumentos",
-      "percussao": "Instrumentos",
-      "amplificadores": "Amplificadores",
-      "som": "Sistemas de PA"
-    };
-    return mapeamento[categoria] || "Acessórios";
-  };
-
   const handleFiltrosChange = (novosFiltros: Partial<FiltrosState>) => {
     setFiltros(prev => ({ ...prev, ...novosFiltros }));
   };
@@ -91,13 +142,21 @@ export function Homepage() {
     });
   };
 
+  const handleOpenDetalhes = (equipamento: Equipamento) => {
+    setEquipamentoSelecionado(equipamento);
+  };
+
+  const handleCloseDetalhes = () => {
+    setEquipamentoSelecionado(null);
+  };
+
   return (
     <div className="page-container">
       <Navbar />
 
       <header className="explore-header">
         <h1>Encontre o Equipamento Ideal</h1>
-        <p>Explore uma vasta gama de equipamentos disponíveis para aluguel.</p>
+        <p>Explore uma vasta gama de equipamentos disponiveis para aluguel.</p>
       </header>
 
       <Filtros 
@@ -113,10 +172,12 @@ export function Homepage() {
       ) : (
         <>
           <div className="cards">
-            {equipamentosFiltrados.map((equipamento: Equipamento) => (
+            {equipamentosFiltrados.map((equipamento: Equipamento, idx: number) => (
               <EquipamentoCard 
-                key={equipamento.id} 
-                equipamento={equipamento} 
+                // Usa id do front ou idProduto do backend; fallback no indice para evitar warning
+                key={equipamento.id || (equipamento as any).idProduto || `equip-${idx}`}
+                equipamento={equipamento}
+                onOpenDetails={handleOpenDetalhes}
               />
             ))}
           </div>
@@ -133,6 +194,63 @@ export function Homepage() {
             </div>
           )}
         </>
+      )}
+
+      {equipamentoSelecionado && (
+        <div className="produto-modal-overlay" onClick={handleCloseDetalhes}>
+          <div className="produto-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="produto-modal-close" onClick={handleCloseDetalhes}>×</button>
+            <div className="produto-modal-body">
+              <div className="produto-modal-image">
+                <img
+                  src={(equipamentoSelecionado as any).imagem}
+                  alt={equipamentoSelecionado.nome}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.onerror = null;
+                    target.src = 'https://via.placeholder.com/600x400?text=Sem+Imagem';
+                  }}
+                />
+                {((equipamentoSelecionado as any).avaliacao ?? 0) > 0 && (
+                  <span className="produto-modal-badge">
+                    <Star size={14} fill="currentColor" /> {(equipamentoSelecionado as any).avaliacao}
+                  </span>
+                )}
+              </div>
+
+              <div className="produto-modal-info">
+                <h2>{equipamentoSelecionado.nome}</h2>
+                <div className="produto-modal-preco">
+                  <strong>R${equipamentoSelecionado.preco}</strong>
+                  <span>/dia</span>
+                </div>
+
+                <div className="produto-modal-local">
+                  <MapPin size={18} />
+                  <span>{(equipamentoSelecionado as any).local}</span>
+                </div>
+
+                {(equipamentoSelecionado as any).descricao && (
+                  <p className="produto-modal-descricao">
+                    {(equipamentoSelecionado as any).descricao}
+                  </p>
+                )}
+
+                {(equipamentoSelecionado as any).proprietario && (
+                  <div className="produto-modal-owner">
+                    <User size={16} />
+                    <span>Proprietário: {(equipamentoSelecionado as any).proprietario}</span>
+                  </div>
+                )}
+
+                <div className="produto-modal-acao">
+                  <button className="btn-alugar">Alugar Agora</button>
+                  <button className="btn-voltar" onClick={handleCloseDetalhes}>Fechar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

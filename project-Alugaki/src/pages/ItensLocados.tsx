@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "../components/Navbar";
 import { Filtros } from "../components/filterBar";
 import { EquipamentoCard } from "../components/equipamentosCard";
 // @ts-ignore - hook em JS sem tipos
 import { useProdutos } from "../hooks/useProducts";
-import { produtoService } from "../services/api";
 import { type Equipamento } from "../mocks/equipamentosData";
+import { aluguelService } from "../services/rentalService";
+import { notificationService } from "../services/notificationService";
 import { MapPin, Star, User } from "lucide-react";
 
 const mapearCategoria = (categoria: string): string => {
@@ -37,13 +38,16 @@ interface FiltrosState {
   apenasDisponiveis: boolean;
 }
 
-export function MyItens() {
+export function ItensLocados() {
   const { produtos, loading } = useProdutos();
   const usuarioLogado = obterUsuarioLogado();
   const usuarioIdLogado = usuarioLogado?.id ?? usuarioLogado?.idUsuario ?? usuarioLogado?.usuarioId;
   const usuarioNomeLogado = usuarioLogado?.nome ? usuarioLogado.nome.toLowerCase() : "";
   const [equipamentoSelecionado, setEquipamentoSelecionado] = useState<Equipamento | null>(null);
-  const [inativandoId, setInativandoId] = useState<number | null>(null);
+  const [loadingRentals, setLoadingRentals] = useState(true);
+  const [produtosAlugadosIds, setProdutosAlugadosIds] = useState<number[]>([]);
+  const [aluguelPorProduto, setAluguelPorProduto] = useState<Record<number, number>>({});
+  const [toastMessage, setToastMessage] = useState<string>("");
   const [filtros, setFiltros] = useState<FiltrosState>({
     pesquisa: "",
     categorias: [],
@@ -51,6 +55,62 @@ export function MyItens() {
     faixasPreco: [],
     apenasDisponiveis: false
   });
+
+  // Busca alugueis (status 3) do usuário locatário
+  useEffect(() => {
+    const fetchAlugueis = async () => {
+      if (!usuarioIdLogado) {
+        setProdutosAlugadosIds([]);
+        setLoadingRentals(false);
+        return;
+      }
+      try {
+        setLoadingRentals(true);
+        const alugados = await aluguelService.listarPorStatus(3);
+        const relacoes = (Array.isArray(alugados) ? alugados : [])
+          .filter((a: any) => {
+            const userId =
+              a.usuarioIdUsuario ??
+              a.usuario_id_usuario ??
+              a.idUsuario ??
+              a.usuarioId;
+            return Number(userId) === Number(usuarioIdLogado);
+          })
+          .map((a: any) => {
+            const prodId =
+              a.produtoIdProduto ??
+              a.produto_id_produto ??
+              a.idProduto ??
+              a.produtoId;
+            const aluguelId =
+              a.idAluguel ??
+              a.id_aluguel ??
+              a.id ??
+              a.aluguelId;
+            return { prodId: Number(prodId), aluguelId: Number(aluguelId) };
+          })
+          .filter((item: any) => Number.isFinite(item.prodId));
+
+        const ids = relacoes.map((item: any) => item.prodId);
+        const mapa: Record<number, number> = {};
+        relacoes.forEach((rel: any) => {
+          if (Number.isFinite(rel.prodId) && Number.isFinite(rel.aluguelId)) {
+            mapa[rel.prodId] = rel.aluguelId;
+          }
+        });
+
+        setProdutosAlugadosIds(ids);
+        setAluguelPorProduto(mapa);
+      } catch (error) {
+        console.error("Nao foi possivel carregar itens alugados do locatario:", error);
+        setProdutosAlugadosIds([]);
+        setAluguelPorProduto({});
+      } finally {
+        setLoadingRentals(false);
+      }
+    };
+    fetchAlugueis();
+  }, [usuarioIdLogado]);
 
   const pertenceAoUsuario = (item: Equipamento) => {
     const donoId =
@@ -73,41 +133,33 @@ export function MyItens() {
       return donoNome === usuarioNomeLogado;
     }
 
-    // Se nao conseguimos identificar o usuario logado, nao atribui o item
     return false;
   };
 
-  // Filtra apenas os itens do usuario
-  let meusItens = produtos.filter(pertenceAoUsuario);
+  // Filtra itens alugados pelo usuario (locatario), baseado nos ids de aluguel status 3
+  let itensLocados = produtos.filter((equipamento: Equipamento) => {
+    if (!produtosAlugadosIds.length) return false;
+    const prodId = Number((equipamento as any).id ?? (equipamento as any).idProduto ?? (equipamento as any).produtoId ?? (equipamento as any).idproduto);
+    return produtosAlugadosIds.includes(prodId);
+  });
 
   // Aplicar filtros
-  meusItens = meusItens.filter((equipamento: Equipamento) => {
-    // Oculta itens reservados/alugados do dono (status 2 ou 3)
-    const statusIdRaw = (equipamento as any).statusAluguelIdStatus ?? (equipamento as any).status_aluguel_id_status;
-    const statusId = Number(statusIdRaw);
-    if (statusId === 2 || statusId === 3) {
-      return false;
-    }
-
-    // Filtro por pesquisa (nome)
+  itensLocados = itensLocados.filter((equipamento: Equipamento) => {
     if (filtros.pesquisa && !equipamento.nome.toLowerCase().includes(filtros.pesquisa.toLowerCase())) {
       return false;
     }
-    
-    // Filtro por categorias
+
     if (filtros.categorias.length > 0) {
       const categoriaMapeada = mapearCategoria(equipamento.categoria);
       if (!filtros.categorias.includes(categoriaMapeada)) {
         return false;
       }
     }
-    
-    // Filtro por locais
+
     if (filtros.locais.length > 0 && !filtros.locais.includes(equipamento.local)) {
       return false;
     }
-    
-    // Filtro por faixas de preco
+
     if (filtros.faixasPreco.length > 0) {
       const precoNoIntervalo = filtros.faixasPreco.some(faixa => {
         switch(faixa) {
@@ -122,12 +174,11 @@ export function MyItens() {
         return false;
       }
     }
-    
-    // Filtro por disponibilidade
+
     if (filtros.apenasDisponiveis && !equipamento.disponivel) {
       return false;
     }
-    
+
     return true;
   });
 
@@ -145,6 +196,30 @@ export function MyItens() {
     });
   };
 
+  const handleSolicitarDevolucao = (equipamento: Equipamento) => {
+    const prodId = Number((equipamento as any).id ?? (equipamento as any).idProduto ?? (equipamento as any).produtoId ?? (equipamento as any).idproduto);
+    const aluguelId = aluguelPorProduto[prodId];
+    const donoId =
+      (equipamento as any).usuarioId ??
+      (equipamento as any).usuario_id_usuario ??
+      (equipamento as any).usuarioIdUsuario ??
+      (equipamento as any).idUsuario;
+    if (!aluguelId || !donoId) {
+      alert("Não foi possível identificar o aluguel ou o dono do item para solicitar devolução.");
+      return;
+    }
+    notificationService.add({
+      title: "Devolução solicitada",
+      content: `O item "${equipamento.nome}" foi devolvido e aguarda confirmação do dono.`,
+      category: "Devolucao",
+      recipientId: Number(donoId),
+      aluguelId: Number(aluguelId),
+      produtoId: prodId,
+    });
+    setToastMessage("Devolução enviada ao dono para confirmação.");
+    setTimeout(() => setToastMessage(""), 2500);
+  };
+
   const handleOpenDetalhes = (equipamento: Equipamento) => {
     setEquipamentoSelecionado(equipamento);
   };
@@ -158,8 +233,8 @@ export function MyItens() {
       <Navbar />
 
       <header className="explore-header">
-        <h1>Meus Itens</h1>
-        <p>Cadastre, atualize, edite e exclua os seus itens.</p>
+        <h1>Itens Alugados</h1>
+        <p>Visualize os seus itens que já estão alugados.</p>
       </header>
 
       <Filtros 
@@ -168,27 +243,63 @@ export function MyItens() {
         onLimparFiltros={handleLimparFiltros}
       />
 
-      {loading ? (
+      {loading || loadingRentals ? (
         <div style={{ textAlign: 'center', padding: '3rem' }}>
           <p>Carregando itens...</p>
         </div>
       ) : (
         <>
           <div className="cards">
-            {meusItens.map((item: Equipamento) => (
-              <EquipamentoCard key={item.id} equipamento={item} showAlugarButton={false} onOpenDetails={handleOpenDetalhes} />
+            {itensLocados.map((item: Equipamento) => (
+              <div key={item.id} style={{ width: "220px" }}>
+                <EquipamentoCard equipamento={item} showAlugarButton={false} onOpenDetails={handleOpenDetalhes} />
+                <button
+                  style={{
+                    marginTop: "8px",
+                    width: "100%",
+                    padding: "8px",
+                    borderRadius: "6px",
+                    border: "none",
+                    backgroundColor: "#007bff",
+                    color: "white",
+                    cursor: "pointer",
+                    fontWeight: 600
+                  }}
+                  onClick={() => handleSolicitarDevolucao(item)}
+                >
+                  Devolver item
+                </button>
+              </div>
             ))}
           </div>
 
-          {meusItens.length === 0 && (
+          {itensLocados.length === 0 && (
             <div className="no-results">
-              <p>Nenhum equipamento encontrado com os filtros selecionados.</p>
+              <p>Nenhum item alugado encontrado.</p>
               <button 
                 onClick={handleLimparFiltros}
                 className="btn-limpar-filtros"
               >
                 Limpar Filtros
               </button>
+            </div>
+          )}
+
+          {toastMessage && (
+            <div
+              style={{
+                position: "fixed",
+                top: "16px",
+                right: "16px",
+                background: "#000",
+                color: "#fff",
+                padding: "10px 16px",
+                borderRadius: "8px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                zIndex: 2000,
+              }}
+            >
+              {toastMessage}
             </div>
           )}
 
@@ -240,6 +351,12 @@ export function MyItens() {
                     )}
 
                     <div className="produto-modal-acao">
+                      <button
+                        className="btn-alugar"
+                        onClick={() => handleSolicitarDevolucao(equipamentoSelecionado)}
+                      >
+                        Devolver item
+                      </button>
                       <button className="btn-voltar" onClick={handleCloseDetalhes}>Fechar</button>
                     </div>
                   </div>

@@ -12,6 +12,7 @@ import './styles/Perfil.css'
 import { Mensagens } from "./pages/Mensagens.tsx"
 import './styles/Mensagens.css'
 import { MyItens } from "./pages/Itens.tsx"
+import { ItensLocados } from "./pages/ItensLocados.tsx"
 import './styles/Itens.css'
 import { EsqueceuSenha } from "./pages/esqueceuSenha.tsx"
 import './styles/esqueceuSenha.css'
@@ -44,6 +45,11 @@ function App() {
         <Route path= "/itens" element={
           <ProtectedRoute>
             <MyItens/>
+          </ProtectedRoute>
+        } />
+        <Route path= "/locados" element={
+          <ProtectedRoute>
+            <ItensLocados/>
           </ProtectedRoute>
         } />
         <Route path= "/equipamento/:id" element={

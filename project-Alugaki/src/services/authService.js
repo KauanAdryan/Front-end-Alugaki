@@ -253,14 +253,18 @@ export const authService = {
     
     try {
       const response = await httpClient.post(BFF_CONFIG.ENDPOINTS.USUARIO_REDEFINIR_SENHA, {
-        cpf,
         email,
-        novaSenha
+        cpfCnpj: cpf,
+        senhaNova: novaSenha
       });
       return response.data;
     } catch (error) {
       console.error('Erro ao atualizar senha:', error);
-      throw error;
+      const msg = error?.response?.data?.message || error?.message;
+      if (msg?.toLowerCase().includes('email') || msg?.toLowerCase().includes('cpf')) {
+        throw new Error('Email ou CPF/CNPJ não encontrados ou não correspondem ao mesmo usuário.');
+      }
+      throw new Error(msg || 'Não foi possível redefinir a senha.');
     }
   },
 

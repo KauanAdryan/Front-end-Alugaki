@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
-import { mensagensData } from "../mocks/mensagensData";
+import { notificationService } from "../services/notificationService";
 
 export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [menuAberto, setMenuAberto] = useState(false);
   const [usuarioLogado, setUsuarioLogado] = useState<any>(null);
   const [notificacoesNaoLidas, setNotificacoesNaoLidas] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -12,7 +13,8 @@ export function Navbar() {
 
   // Contar notificações não lidas
   useEffect(() => {
-    const naoLidas = mensagensData.filter(msg => !msg.isRead).length;
+  const usuarioId = notificationService.getUsuarioIdLocal();
+  const naoLidas = notificationService.countUnread(usuarioId);
     setNotificacoesNaoLidas(naoLidas);
   }, []);
 
@@ -26,6 +28,13 @@ export function Navbar() {
         console.error("Erro ao parsear usuário:", error);
       }
     }
+  }, []);
+
+  // Fechar menu ao redimensionar (evita estado aberto ao voltar para desktop)
+  useEffect(() => {
+    const handleResize = () => setMenuAberto(false);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Fechar dropdown ao clicar fora
@@ -55,31 +64,74 @@ export function Navbar() {
     navigate("/perfil");
   };
 
+  const handleNavLinkClick = (path: string) => {
+    navigate(path);
+    setMenuAberto(false);
+  };
+
   return (
-      <nav className="navbar">
-        <div className="logo-container">
-          <img src="/logo AlugaKi.png" alt="AlugaKi Logo" className="logo" />
-          <h2>AlugAki</h2>
-        </div>
-        <div className="nav-center">
+    <nav className="navbar">
+      <div className="logo-container" onClick={() => handleNavLinkClick("/")}>
+        <img src="/logo AlugaKi.png" alt="AlugaKi Logo" className="logo" />
+        <h2>AlugAki</h2>
+      </div>
+
+      <button
+        type="button"
+        className={`nav-toggle ${menuAberto ? "open" : ""}`}
+        aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
+        aria-expanded={menuAberto}
+        onClick={() => setMenuAberto(prev => !prev)}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+
+      <div className={`nav-center ${menuAberto ? "open" : ""}`}>
         <ul className="nav-links"> 
-          <li><a href="/">Explorar</a></li>
-          <li><a href="/itens">Meus Itens</a></li>
+          <li>
+            <button
+              type="button"
+              className="nav-link-btn"
+              onClick={() => handleNavLinkClick("/")}
+            >
+              Explorar
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className="nav-link-btn"
+              onClick={() => handleNavLinkClick("/itens")}
+            >
+              Meus Itens
+            </button>
+          </li>
+          <li>
+            <button
+              type="button"
+              className="nav-link-btn"
+              onClick={() => handleNavLinkClick("/locados")}
+            >
+              Itens Alugados
+            </button>
+          </li>
         </ul>
+      </div>
+
+      <div className="navbar-right">
+        <div 
+          className="notifications-icon" 
+          onClick={() => navigate("/mensagens")}
+          style={{ cursor: "pointer", position: "relative" }}
+        >
+          <Bell size={24} />
+          {notificacoesNaoLidas > 0 && (
+            <span className="notification-badge">{notificacoesNaoLidas}</span>
+          )}
         </div>
-        <div className="space">..........................................................................................................................................................................................</div>
-        <div className="navbar-right">
-          <div 
-            className="notifications-icon" 
-            onClick={() => navigate("/mensagens")}
-            style={{ cursor: "pointer", position: "relative" }}
-          >
-            <Bell size={24} />
-            {notificacoesNaoLidas > 0 && (
-              <span className="notification-badge">{notificacoesNaoLidas}</span>
-            )}
-          </div>
-          <div className="profile" ref={dropdownRef}>
+        <div className="profile" ref={dropdownRef}>
           <div 
             className="avatar" 
             onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -113,9 +165,9 @@ export function Navbar() {
               </button>
             </div>
           )}
-          </div>
         </div>
-      </nav>
-  )
+      </div>
+    </nav>
+  );
 }
 

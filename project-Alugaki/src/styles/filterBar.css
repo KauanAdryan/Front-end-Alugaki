@@ -2,13 +2,16 @@
 .filter-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin-left: 106px;
+  justify-content: flex-start;
+  gap: 12px;
   position: relative;
   z-index: 100;
-  width: 1280px;
+  width: 100%;
+  max-width: 1200px;
   height: 50px;
+  padding: 0 1.25rem;
+  margin: 0 auto 1.5rem auto;
+  box-sizing: border-box;
 }
 
 .button-filters {
