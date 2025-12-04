@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { authService } from "../services/authService";
+import { getUsuarioSalvo, salvarUsuario } from "../utils/userStorage";
 
 export function PerfilPage() {
   const navigate = useNavigate();
@@ -20,35 +21,78 @@ export function PerfilPage() {
     senha: "",
     confirmarSenha: ""
   });
+  const [fotoNome, setFotoNome] = useState<string>("");
+  const [fotoPreview, setFotoPreview] = useState<string>("");
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
 
   useEffect(() => {
-    const usuarioLogado = localStorage.getItem("usuario");
-    if (usuarioLogado) {
-      try {
-        const usuarioData = JSON.parse(usuarioLogado);
-        setUsuario(usuarioData);
-        setFormData({
-          nome: usuarioData.nome || "",
-          email: usuarioData.email || "",
-          telefone: usuarioData.telefone || "",
-          cpf: usuarioData.cpf || usuarioData.cpfCnpj || "",
-          rua: usuarioData.rua || "",
-          numero: usuarioData.numero || "",
-          cidade: usuarioData.cidade || "",
-          estado: usuarioData.estado || "",
-          cep: usuarioData.cep || "",
-          bairro: usuarioData.bairro || "",
-          senha: "",
-          confirmarSenha: ""
-        });
-      } catch (error) {
-        console.error("Erro ao carregar usuário:", error);
-        navigate("/");
+    const usuarioLocal = getUsuarioSalvo();
+    if (!usuarioLocal) {
+      navigate('/');
+      return;
+    }
+
+    const preencher = (u: any) => {
+      setUsuario(u);
+      const fotoAtual = u.foto || u.avatar || "";
+      if (fotoAtual) {
+        setFotoPreview(
+          fotoAtual.startsWith("http") || fotoAtual.startsWith("data:")
+            ? fotoAtual
+            : `data:image/jpeg;base64,${fotoAtual}`
+        );
+        setFotoNome("");
+      } else {
+        setFotoPreview("");
+        setFotoNome("");
       }
-    } else {
-      navigate("/");
+
+      const endereco: any = u.endereco || {};
+      const rua = u.rua || endereco.rua || endereco.logradouro || endereco.endereco || u.enderecoTexto || "";
+      const numero =
+        u.numero ||
+        endereco.numero ||
+        endereco.numeroResidencia ||
+        endereco.numero_residencia ||
+        endereco.numeroResidenc ||
+        "";
+      const bairro = u.bairro || endereco.bairro || "";
+      const cidade = u.cidade || endereco.cidade || "";
+      const estado = u.estado || endereco.estado || "";
+      const cep = u.cep || endereco.cep || "";
+
+      setFormData({
+        nome: u.nome || '',
+        email: u.email || '',
+        telefone: u.telefone || '',
+        cpf: u.cpf || u.cpfCnpj || '',
+        rua,
+        numero,
+        cidade,
+        estado,
+        cep,
+        bairro,
+        senha: '',
+        confirmarSenha: ''
+      });
+    };
+
+    preencher(usuarioLocal);
+
+    const idUsuario =
+      usuarioLocal.id ?? usuarioLocal.idUsuario ?? usuarioLocal.usuarioId ?? usuarioLocal.usuario_id_usuario;
+    if (idUsuario) {
+      authService.getUsuarioById(idUsuario)
+        .then((u) => {
+          if (u) {
+            salvarUsuario(u);
+            preencher(u);
+          }
+        })
+        .catch(() => {
+          /* se falhar, fica com dados locais */
+        });
     }
   }, [navigate]);
 
@@ -60,24 +104,62 @@ export function PerfilPage() {
     }));
   };
 
+  const avatarSrc = (() => {
+    const foto = fotoPreview || usuario?.foto || usuario?.avatar;
+    if (!foto) return "";
+    if (typeof foto === "string" && (foto.startsWith("http") || foto.startsWith("data:"))) {
+      return foto;
+    }
+    return `data:image/jpeg;base64,${foto}`;
+  })();
+
+  const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setFotoNome("");
+      setFotoPreview(usuario?.foto || usuario?.avatar || "");
+      return;
+    }
+    setFotoNome(file.name);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const result = ev.target?.result as string;
+      setFotoPreview(result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro("");
     setSucesso("");
 
-    // Validar senhas se foram preenchidas
-    if (formData.senha || formData.confirmarSenha) {
-      if (formData.senha !== formData.confirmarSenha) {
-        setErro("As senhas não coincidem!");
-        return;
-      }
-      if (formData.senha.length < 6) {
-        setErro("A senha deve ter pelo menos 6 caracteres!");
-        return;
-      }
+    // Senha obrigatória para evitar null no backend
+    if (!formData.senha) {
+      setErro("Informe sua senha para salvar as alterações.");
+      return;
+    }
+    if (formData.senha !== formData.confirmarSenha) {
+      setErro("As senhas não coincidem!");
+      return;
+    }
+    if (formData.senha.length < 6) {
+      setErro("A senha deve ter pelo menos 6 caracteres!");
+      return;
     }
 
     try {
+      const userId =
+        usuario?.id ??
+        usuario?.idUsuario ??
+        usuario?.usuarioId ??
+        usuario?.usuario_id_usuario;
+
+      if (!Number.isFinite(Number(userId))) {
+        setErro("Nao foi possivel identificar o usuario para atualizar.");
+        return;
+      }
+
       const dadosAtualizacao: any = {
         nome: formData.nome.trim(),
         email: formData.email.trim(),
@@ -89,18 +171,17 @@ export function PerfilPage() {
         cidade: formData.cidade.trim(),
         estado: formData.estado.trim().toUpperCase(),
         cep: formData.cep.trim(),
-        bairro: formData.bairro.trim()
+        bairro: formData.bairro.trim(),
+        foto: fotoPreview || usuario?.foto || usuario?.avatar || ""
       };
 
       // Adicionar senha apenas se foi preenchida
-      if (formData.senha) {
-        dadosAtualizacao.senha = formData.senha;
-      }
+      dadosAtualizacao.senha = formData.senha;
 
-      const usuarioAtualizado = await authService.atualizarUsuario(usuario.id, dadosAtualizacao);
+      const usuarioAtualizado = await authService.atualizarUsuario(Number(userId), dadosAtualizacao);
       
       // Atualizar localStorage
-      localStorage.setItem("usuario", JSON.stringify(usuarioAtualizado));
+      salvarUsuario(usuarioAtualizado);
       setUsuario(usuarioAtualizado);
       
       setSucesso("Perfil atualizado com sucesso!");
@@ -142,8 +223,12 @@ export function PerfilPage() {
         {/* Profile Header */}
         <div className="perfil-header-section">
           <div className="perfil-avatar-large">
-            {usuario.avatar || (usuario as any).foto ? (
-              <img src={usuario.avatar || (usuario as any).foto} alt={usuario.nome} />
+            {avatarSrc ? (
+              <img
+                src={avatarSrc}
+                alt={usuario.nome}
+                onError={() => setFotoPreview("")}
+              />
             ) : (
               <div className="avatar-placeholder">
                 {usuario.nome ? usuario.nome.charAt(0).toUpperCase() : "👤"}
@@ -153,6 +238,13 @@ export function PerfilPage() {
           <div className="perfil-user-info">
             <h1>{usuario.nome}</h1>
             <p>{usuario.email}</p>
+            <div className="perfil-avatar-actions">
+              <label className="perfil-avatar-edit">
+                Alterar foto
+                <input type="file" accept="image/*" onChange={handleFotoChange} />
+              </label>
+              {fotoNome && <small className="perfil-avatar-name">{fotoNome}</small>}
+            </div>
           </div>
         </div>
 
@@ -317,28 +409,30 @@ export function PerfilPage() {
             
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="password">Nova senha (opcional)</label>
+                <label htmlFor="password">Senha (obrigatória para salvar)</label>
                 <input 
                   type="password" 
                   id="password" 
                   name="senha"
                   className="input-field" 
-                  placeholder="••••••••" 
+                  placeholder="Digite sua senha" 
                   value={formData.senha}
                   onChange={handleChange}
+                  required
                 />
               </div>
               
               <div className="form-group">
-                <label htmlFor="confirm-password">Confirmar nova senha</label>
+                <label htmlFor="confirm-password">Confirmar senha</label>
                 <input 
                   type="password" 
                   id="confirm-password" 
                   name="confirmarSenha"
                   className="input-field" 
-                  placeholder="••••••••" 
+                  placeholder="Confirme sua senha" 
                   value={formData.confirmarSenha}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>

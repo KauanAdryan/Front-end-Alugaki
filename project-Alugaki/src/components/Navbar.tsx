@@ -71,6 +71,14 @@ export function Navbar() {
     navigate("/perfil");
   };
 
+  const fotoBruta = usuarioLogado?.avatar || usuarioLogado?.foto;
+  const avatarSrc =
+    fotoBruta && (fotoBruta.startsWith("http") || fotoBruta.startsWith("data:"))
+      ? fotoBruta
+      : fotoBruta
+        ? `data:image/jpeg;base64,${fotoBruta}`
+        : null;
+
   const handleNavLinkClick = (path: string) => {
     navigate(path);
     setMenuAberto(false);
@@ -153,9 +161,9 @@ export function Navbar() {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             style={{ cursor: "pointer" }}
           >
-            {usuarioLogado?.avatar || usuarioLogado?.foto ? (
+            {avatarSrc ? (
               <img 
-                src={usuarioLogado.avatar || usuarioLogado.foto} 
+                src={avatarSrc} 
                 alt={usuarioLogado.nome || "Perfil"} 
                 className="avatar-image"
               />

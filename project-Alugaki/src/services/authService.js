@@ -29,10 +29,12 @@ const montarPayloadUsuario = (dados) => {
     email: dados.email,
     telefone: dados.telefone,
     cpfCnpj: dados.cpfCnpj || dados.cpf,
+    foto: dados.foto || dados.avatar,
     contato: dados.telefone || dados.email,
     endereco: enderecoTexto || dados.cep || dados.cidade || dados.estado || 'endereco n/d',
     rua: dados.rua,
     numero: numeroResidencia,
+    numero_residenc: numeroResidencia,
     numeroResidencia,
     numeroResidenc: numeroResidencia,
     numeroResidencial: numeroResidencia,
@@ -59,15 +61,26 @@ const normalizarUsuario = (usuario) => {
   const enderecoObj = typeof usuario.endereco === 'object' ? usuario.endereco : {};
   const enderecoStr = typeof usuario.endereco === 'string' ? usuario.endereco : undefined;
 
+  const numero =
+    usuario.numero ||
+    usuario.numeroResidencia ||
+    usuario.numero_residenc ||
+    usuario.numeroResidenc ||
+    enderecoObj.numero ||
+    enderecoObj.numeroResidencia ||
+    enderecoObj.numero_residenc ||
+    enderecoObj.numeroResidenc;
+
   return {
     ...usuario,
     email: usuario.email || contatoObj.email,
     telefone: usuario.telefone || contatoObj.telefone || contatoStr,
     cpf: usuario.cpf || usuario.cpfCnpj,
     cpfCnpj: usuario.cpfCnpj || usuario.cpf,
+    foto: usuario.foto || usuario.avatar,
     avatar: usuario.avatar || usuario.foto,
     rua: usuario.rua || enderecoObj.rua,
-    numero: usuario.numero || enderecoObj.numero,
+    numero,
     bairro: usuario.bairro || enderecoObj.bairro,
     cidade: usuario.cidade || enderecoObj.cidade,
     estado: usuario.estado || enderecoObj.estado,

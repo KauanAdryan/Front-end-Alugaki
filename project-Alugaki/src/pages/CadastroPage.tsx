@@ -156,7 +156,7 @@ export function CadastroPage() {
         const telefoneLimpo = formData.telefone.replace(/\D/g, '');
         const cepLimpo = formData.cep.replace(/\D/g, '');
 
-        const usuarioData = {
+        const usuarioData: any = {
             nome: formData.nome.trim(),
             email: formData.email.trim(),
             cpfCnpj: cpfCnpjLimpo,
@@ -169,6 +169,10 @@ export function CadastroPage() {
             bairro: formData.bairro.trim(),
             senha: formData.senha
         };
+        if (fotoPreview) {
+            // Se já vier com data URI, envia direto; caso contrário, mantém como está
+            usuarioData.foto = fotoPreview;
+        }
 
         try {
             await authService.cadastrar(usuarioData);
